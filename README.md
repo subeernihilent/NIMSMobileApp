@@ -1,0 +1,1 @@
+Clone the repo then "npm install" inside the directory
