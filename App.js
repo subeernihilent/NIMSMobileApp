@@ -1,10 +1,19 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React,{useState} from 'react';
+import { StyleSheet, Text, View ,TextInput,Button} from 'react-native';
+import { db } from './Enviroment/FirebaseConfig';
 
 export default function App() {
+  const [textValue,setTextValue] = useState()
+  
+const onClickButton = () => {
+  db.ref('/user').push({
+    textValue
+  });
+}
   return (
     <View style={styles.container}>
-      <Text>Nims POC</Text>
+      <TextInput style={styles.TextInput} placeholder = 'Enter the message' onChangeText={(val) => {setTextValue(val)} }/>
+      <Button title='Submit' onPress={onClickButton}/>
     </View>
   );
 }
@@ -16,4 +25,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  TextInput: {
+    marginBottom: 20
+  }
+
 });
