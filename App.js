@@ -12,7 +12,7 @@ const onClickButton = () => {
 }
   return (
     <View style={styles.container}>
-      <TextInput style={styles.TextInput} placeholder = 'Enter the message' onChangeText={(val) => {setTextValue(val)} }/>
+      <TextInput style={styles.TextInput} placeholder = 'Enter message' onChangeText={(val) => {setTextValue(val)} }/>
       <Button title='Submit' onPress={onClickButton}/>
     </View>
   );
@@ -27,7 +27,10 @@ const styles = StyleSheet.create({
   },
 
   TextInput: {
-    marginBottom: 20
+    marginBottom: 20,
+    borderWidth: 1,
+    padding: 5,
+    width: 200
   }
 
 });
