@@ -4,6 +4,8 @@ if (!global.btoa) {  global.btoa = encode }
 if (!global.atob) { global.atob = decode }
 import { StyleSheet, Text, View ,TextInput,Button} from 'react-native';
 import { db } from './Enviroment/FirebaseConfig';
+import Registration from './Screens/Registration';
+
 
 
 export default function App() {
@@ -27,23 +29,7 @@ const onClickButton = () => {
 
 }
   return (
-    <View style={styles.container}>
-      <TextInput style={styles.TextInput} placeholder = 'Enter the message' onChangeText={(val) => {setTextValue(val)} }/>
-      <Button title='Submit' onPress={onClickButton}/>
-    </View>
+   <Registration/>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  TextInput: {
-    marginBottom: 20
-  }
-
-});

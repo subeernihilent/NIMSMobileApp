@@ -8,8 +8,10 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@react-navigation/native": "^5.3.2",
     "base-64": "^0.1.0",
     "expo": "~37.0.3",
+    "expo-linear-gradient": "^8.1.0",
     "firebase": "^7.14.3",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
@@ -17,8 +19,8 @@
     "react-native-web": "~0.11.7"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.1.0",
-    "@babel/core": "^7.8.6"
+    "@babel/core": "^7.8.6",
+    "babel-preset-expo": "~8.1.0"
   },
   "private": true
 }
