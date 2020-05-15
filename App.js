@@ -12,7 +12,7 @@ const onClickButton = () => {
 }
   return (
     <View style={styles.container}>
-      <TextInput style={styles.TextInput} placeholder = 'Enter message' onChangeText={(val) => {setTextValue(val)} }/>
+      <TextInput style={styles.TextInput} placeholder = 'Enter message here' onChangeText={(val) => {setTextValue(val)} }/>
       <Button title='Submit' onPress={onClickButton}/>
     </View>
   );
