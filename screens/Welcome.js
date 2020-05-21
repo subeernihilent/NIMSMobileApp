@@ -11,7 +11,7 @@ export default function Welcome({ navigation }) {
     }
 
     const onSignUpClick = () => {
-        navigation.navigate('Home');
+        navigation.navigate('Register');
     }
 
     return (

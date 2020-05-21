@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import React from 'react';
 import { Image, ScrollView } from 'react-native';
 import * as yup from 'yup';
-import LoginFormComponent from '../components/LoginFormComponent';
+import LoginFormComponent from '../Components/LoginFormComponent';
 import { db } from '../Enviroment/FirebaseConfig';
 import { globalStyles } from '../styles/global';
 if (!global.btoa) { global.btoa = encode }
@@ -40,6 +40,7 @@ export default function Login({ navigation }) {
                     validationSchema={loginSchema}
 
                     onSubmit={(values, { resetForm }) => {
+                        console.log(values)
                         const ref = db.collection("users").where("email", "==", values.email).where("password", "==", values.password)
 
                         ref.onSnapshot(querySnapshot => {

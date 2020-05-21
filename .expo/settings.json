@@ -1,6 +1,6 @@
 {
   "urlRandomness": "cr-nzt",
-  "hostType": "tunnel",
+  "hostType": "lan",
   "lanType": "ip",
   "dev": true,
   "minify": false,
