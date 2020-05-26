@@ -2,21 +2,14 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import Login from '../Screens/Login';
 import Home from '../Screens/Home';
-import Welcome from '../Screens/Welcome';
 import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
-import {AuthStackNavigator} from '../Navigation/AuthStackNavigator';
+import {AuthStackNavigator} from '../routes/AuthStackNavigator';
 
 export default function LoginStack() {
     const LoginStack = createStackNavigator();
     return (
-      <NavigationContainer>
-        <LoginStack.Navigator>
-          <LoginStack.Screen name={"Welcome"} component={Welcome}  options={{
-          title: "Welcome",
-          headerShown: false,
-          animationEnabled: false,
-        }} />
+        <LoginStack.Navigator initialRouteName="Login">
           <LoginStack.Screen name={"Login"} component={Login}  options={{
           title: "Login",
           headerShown: false,
@@ -30,11 +23,8 @@ export default function LoginStack() {
           headerShown: false,
           animationEnabled: false,
         }}/>
-
         </LoginStack.Navigator>
-      </NavigationContainer>
     );
 }
-
 
 

@@ -44,9 +44,9 @@ export default function FormComponent({navigation}) {
   const [email,setEmail] = useState('');
   
 
-  const handleRegistration = (values,resetForm) => {
+   const handleRegistration = (values,resetForm) => {
    let emailId = values.firstName+"."+values.lastName+"@nihilent.com"
-   db.collection("users")
+     db.collection("users")
      .add({
        firstName: values.firstName,
        lastName: values.lastName,
@@ -59,6 +59,7 @@ export default function FormComponent({navigation}) {
        console.log("Document written with ID: ", docRef.id);
        navigation.navigate('RegistrationSuccessful', {
         emailId: emailId,
+        token: docRef.id
       });
     
      })
@@ -169,7 +170,7 @@ export const styles = StyleSheet.create({
    borderRadius:10,
    borderWidth:1,
    borderColor:'grey',
-   padding: 20,
+   padding: 15,
    fontSize: 14,
    backgroundColor:'white'
  },

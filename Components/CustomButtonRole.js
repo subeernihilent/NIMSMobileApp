@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
         borderWidth:1,
         borderColor:'grey',
         borderRadius:10,
-        padding:20,
+        padding:15,
         backgroundColor:'white',
         flexDirection:'row', 
         justifyContent:'space-between' 

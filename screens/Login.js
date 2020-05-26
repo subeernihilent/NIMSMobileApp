@@ -1,78 +1,74 @@
-import { decode, encode } from 'base-64';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Formik } from 'formik';
-import React from 'react';
-import { Image, ScrollView } from 'react-native';
-import * as yup from 'yup';
-import LoginFormComponent from '../Components/LoginFormComponent';
-import { db } from '../Enviroment/FirebaseConfig';
-import { globalStyles } from '../styles/global';
-if (!global.btoa) { global.btoa = encode }
-if (!global.atob) { global.atob = decode }
-
+import { decode, encode } from "base-64";
+import { LinearGradient } from "expo-linear-gradient";
+import { Formik } from "formik";
+import React from "react";
+import { Image, ScrollView } from "react-native";
+import * as yup from "yup";
+import LoginFormComponent from "../Components/LoginFormComponent";
+import { db } from "../Enviroment/FirebaseConfig";
+import { globalStyles } from "../styles/global";
+if (!global.btoa) {
+  global.btoa = encode;
+}
+if (!global.atob) {
+  global.atob = decode;
+}
+import { AuthContext } from "../Context/AuthContext";
 
 const loginSchema = yup.object({
-    email: yup.string()
-        .email()
-        .required(),
+  email: yup.string().email().required(),
 
-    password: yup.string()
-        .required(),
-
-})
-
+  password: yup.string().required(),
+});
 
 export default function Login({ navigation }) {
+  const { signIn } = React.useContext(AuthContext);
 
-    return (
+  const navigateSignIn = (email, token) => {
+    signIn(email, token);
+  };
 
-        <LinearGradient colors={['#3366cc', '#abc7f9', '#f5f5ff', '#ffffff']}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 1, y: 0 }}
-            style={globalStyles.container}>
+  return (
+    <LinearGradient
+      colors={["#3366cc", "#abc7f9", "#f5f5ff", "#ffffff"]}
+      start={{ x: 0, y: 1 }}
+      end={{ x: 1, y: 0 }}
+      style={globalStyles.container}
+    >
+      <ScrollView>
+        <Image
+          style={globalStyles.logo}
+          source={require("../assets/nims_logo.gif")}
+        />
 
-            <ScrollView>
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          validationSchema={loginSchema}
+          onSubmit={(values, { resetForm }) => {
+            console.log(values);
+            const ref = db
+              .collection("users")
+              .where("email", "==", values.email)
+              .where("password", "==", values.password);
 
-                <Image style={globalStyles.logo} source={require('../assets/nims_logo.gif')} />
-
-                <Formik
-                    initialValues={{ email: '', password: '' }}
-                    validationSchema={loginSchema}
-
-                    onSubmit={(values, { resetForm }) => {
-                        console.log(values)
-                        const ref = db.collection("users").where("email", "==", values.email).where("password", "==", values.password)
-
-                        ref.onSnapshot(querySnapshot => {
-                            if (!querySnapshot.empty) {
-
-                                querySnapshot.forEach(doc => {
-                                    console.log(doc.data())
-                                    navigation.navigate('Home')
-                                    resetForm();
-
-                                });
-                            }
-                            else {
-                                console.log("No such document")
-                                alert("Invalid email & password")
-                            }
-
-                        })
-
-                    }}>
-
-                    {(props) => (
-
-                        <LoginFormComponent props={props} />
-
-                    )}
-                </Formik>
-
-            </ScrollView>
-
-        </LinearGradient>
-    );
-
+            ref.onSnapshot((querySnapshot) => {
+              if (!querySnapshot.empty) {
+                querySnapshot.forEach((doc) => {
+                  console.log("email  :" + doc.data().email);
+                  console.log("tokenLogin  :" + doc.id);
+                  navigateSignIn(doc.data().email, doc.id);
+                  resetForm();
+                });
+              } else {
+                console.log("No such document");
+                alert("Invalid email & password");
+              }
+            });
+          }}
+        >
+          {(props) => <LoginFormComponent props={props} navigation={navigation} />}
+        </Formik>
+      </ScrollView>
+    </LinearGradient>
+  );
 }
-

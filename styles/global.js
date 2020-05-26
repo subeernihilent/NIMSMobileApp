@@ -15,7 +15,7 @@ export const globalStyles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: '#fff',
         margin: 5,
-        padding: 8,
+        padding: 15,
     },
    
 })

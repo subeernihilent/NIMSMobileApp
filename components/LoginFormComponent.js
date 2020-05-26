@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, ScrollView, Alert, View } from 'react-native';
 import { globalStyles } from '../styles/global';
 
-export default function LoginFormComponent({ props }) {
+export default function LoginFormComponent({ props,navigation }) {
     return (
         <View>
             <TextInput style={globalStyles.inputBox}
@@ -27,6 +27,10 @@ export default function LoginFormComponent({ props }) {
 
             <TouchableOpacity style={styles.button} activeOpacity={0.6} onPress={props.handleSubmit} >
                 <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity  activeOpacity={0.6} onPress={() => navigation.push('Register') }>
+                <Text style = {{alignSelf:'center',marginVertical:20}} >Not a member please? <Text style={{color:'red'}}>Signup</Text></Text>
             </TouchableOpacity>
 
         </View>
