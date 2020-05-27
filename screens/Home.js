@@ -9,7 +9,7 @@ export default function Home(){
 
     return(
         <View style= {globalStyles.container}>
-            <Text>HomeScreen</Text>
+            <Text style={{alignSelf:'center'}}>HomeScreen</Text>
             <Button title="Log out" onPress={()=> {logOut()}}/>
         </View>
     );
