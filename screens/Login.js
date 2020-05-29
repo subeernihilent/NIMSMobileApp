@@ -1,8 +1,8 @@
 import { decode, encode } from "base-64";
 import { LinearGradient } from "expo-linear-gradient";
 import { Formik } from "formik";
-import React from "react";
-import { Image, ScrollView } from "react-native";
+import React,{useState} from "react";
+import { Image, ScrollView, ActivityIndicator,View } from "react-native";
 import * as yup from "yup";
 import LoginFormComponent from "../Components/LoginFormComponent";
 import { db } from "../Enviroment/FirebaseConfig";
@@ -17,16 +17,27 @@ import { AuthContext } from "../Context/AuthContext";
 
 const loginSchema = yup.object({
   email: yup.string().email().required(),
-
   password: yup.string().required(),
 });
+
+
 
 export default function Login({ navigation }) {
   const { signIn } = React.useContext(AuthContext);
 
+  const [isLoading,setLoading] = useState(false)
+
   const navigateSignIn = (email, token) => {
     signIn(email, token);
   };
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
 
   return (
     <LinearGradient
@@ -35,6 +46,8 @@ export default function Login({ navigation }) {
       end={{ x: 1, y: 0 }}
       style={globalStyles.container}
     >
+      
+      
       <ScrollView>
         <Image
           style={globalStyles.logo}
@@ -45,6 +58,7 @@ export default function Login({ navigation }) {
           initialValues={{ email: "", password: "" }}
           validationSchema={loginSchema}
           onSubmit={(values, { resetForm }) => {
+            setLoading(true)
             console.log(values);
             const ref = db
               .collection("users")
@@ -60,6 +74,7 @@ export default function Login({ navigation }) {
                   resetForm();
                 });
               } else {
+                setLoading(false)
                 console.log("No such document");
                 alert("Invalid email & password");
               }

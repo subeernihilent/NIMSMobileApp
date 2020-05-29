@@ -2,7 +2,6 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import Login from '../Screens/Login';
 import Home from '../Screens/Home';
-import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
 import {AuthStackNavigator} from '../routes/AuthStackNavigator';
 
@@ -15,7 +14,7 @@ export default function LoginStack() {
           headerShown: false,
           animationEnabled: false,
         }} />
-          <LoginStack.Screen name={"Home"} component={Home}  options={{
+         <LoginStack.Screen name={"Home"} component={Home}  options={{
           title: "Home",
         }} />
         <LoginStack.Screen name={"Register"} component={AuthStackNavigator}  options={{

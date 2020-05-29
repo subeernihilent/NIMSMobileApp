@@ -2,9 +2,9 @@
   "devToolsPort": 19002,
   "expoServerPort": 19000,
   "packagerPort": 19001,
-  "packagerPid": 3040,
-  "expoServerNgrokUrl": "https://cr-nzt.anonymous.nimsmobileapp.exp.direct",
-  "packagerNgrokUrl": "https://packager.cr-nzt.anonymous.nimsmobileapp.exp.direct",
-  "ngrokPid": 3067,
+  "packagerPid": 3302,
+  "expoServerNgrokUrl": "https://y7-gim.anonymous.nimsmobileapp.exp.direct",
+  "packagerNgrokUrl": "https://packager.y7-gim.anonymous.nimsmobileapp.exp.direct",
+  "ngrokPid": 3320,
   "webpackServerPort": null
 }

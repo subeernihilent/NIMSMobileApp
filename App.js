@@ -130,14 +130,14 @@ export default function App() {
 
   return (
     <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
+      <NavigationContainer >
         {loginState.userToken != null ? (
           <Drawer.Navigator>
             <Drawer.Screen name="Main" component={HomeStack} />
             <Drawer.Screen name="About" component={About} />
           </Drawer.Navigator>
         ) : (
-          <LoginStack />
+          <LoginStack/>
         )}
       </NavigationContainer>
     </AuthContext.Provider>
