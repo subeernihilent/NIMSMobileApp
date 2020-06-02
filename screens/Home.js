@@ -2,9 +2,12 @@ import React, {useState} from 'react';
 import {  StyleSheet, Text,FlatList ,TouchableOpacity,View,Image} from 'react-native';
 import { globalStyles } from '../styles/global';
 import { AuthContext } from "../Context/AuthContext";
+import useNavigateLock from '../Hooks/Lock'
+
 
 export default function Home({navigation}){
-
+    const lock = useNavigateLock()
+    const goAppleave = () => lock() && navigation.push('ApplyLeave')
     const { logOut } = React.useContext(AuthContext);
     const [menuList,setMenuList] = useState([{ id: 1, value: "Time Sheet", image:  require('../assets/timeSheet.png')},
     { id: 2, value: "Apply Leaves",image:  require('../assets/leave.png') },
@@ -17,7 +20,7 @@ export default function Home({navigation}){
           keyExtractor={(item) => item.id.toString()}
           data={menuList}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() =>  navigation.push('ApplyLeave')}>
+            <TouchableOpacity onPress={goAppleave}>
               <View style={styles.listView}>
                 <Image style={styles.image} source={item.image} />
                 <Text style={styles.text}>{item.value}</Text>

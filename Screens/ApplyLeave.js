@@ -1,22 +1,27 @@
 import React, {useState} from 'react';
 import { Text,View,StyleSheet,Image,TouchableOpacity,ScrollView} from 'react-native';
 import { globalStyles } from '../styles/global';
-import LeaveStaus from '../Components/LeaveComponents/LeaveStatus'
+import LeaveStaus from '../Components/LeaveStatus'
 import { Entypo } from '@expo/vector-icons';
 import CheckBox from 'react-native-check-box'
 import { AntDesign } from '@expo/vector-icons'; 
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
+import useNavigateLock from '../Hooks/Lock'
+
 
 
 
 
 export default function ApplyLeave({navigation}){
+  const lock = useNavigateLock()
+  const ApplyLeaveSecondScreen = () => lock() && navigation.push('ApplyLeaveSecondScreen')
+  const goLeaveStatus = () => lock() && navigation.push('LeaveStatus')
 
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
     return (
       <View style={globalStyles.container}>
         <ScrollView showsVerticalScrollIndicator = {false}>
-          <LeaveStaus />
+          <LeaveStaus navigation = {goLeaveStatus} />
           <View>
             <Text style={styles.typeText}>Leave Type :</Text>
             <TouchableOpacity style={styles.leaveType}>
@@ -52,7 +57,7 @@ export default function ApplyLeave({navigation}){
             <Text style={styles.fromDateText}>31th May 2020</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.nextButton} onPress={() => navigation.push('ApplyLeaveSecondScreen')}>
+          <TouchableOpacity style={styles.nextButton} onPress={ApplyLeaveSecondScreen}>
           <MaterialIcons  name="navigate-next" size={44} color="black" />
           </TouchableOpacity>
 

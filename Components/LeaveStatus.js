@@ -3,15 +3,15 @@ import { Text,View,StyleSheet,Image,TouchableOpacity,ScrollView} from 'react-nat
 import { MaterialIcons } from '@expo/vector-icons'; 
 
 
-export default function StatusButton( ) {
+export default function StatusButton({navigation}) {
     return (
       <View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={navigation}>
           <View style={styles.searchView}>
             <View style={styles.chidlView}>
               <Image
                 style={styles.image}
-                source={require('/Users/jagdish/Desktop/GITREPO/NIMSMobileApp/assets/leaveStatus.png')}
+                source={require('../assets/leaveStatus.png')}
               />
               <Text style={styles.text}>Leave Status</Text>
             </View>
