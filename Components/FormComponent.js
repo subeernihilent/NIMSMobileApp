@@ -1,4 +1,4 @@
-import React, { useState,useRef,useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,7 @@ import {
   TextInput,
   Keyboard,
   Alert,
-  Button
+  Button,
 } from "react-native";
 import { globalStyles } from "../GlobalStyle/GlobalStyles";
 import CustomButtonRole from "./CustomButtonRole";
@@ -37,7 +37,7 @@ const reviewSchema = yup.object({
     }),
 });
 
-const ShowErrorAlert = (error) =>{
+const ShowErrorAlert = (error) => {
   if (error == "Role") {
     Alert.alert(
       "Error",
@@ -45,7 +45,7 @@ const ShowErrorAlert = (error) =>{
       [{ text: "OK", onPress: () => console.log("OK Pressed") }],
       { cancelable: false }
     );
-  }else {
+  } else {
     Alert.alert(
       "Error",
       "Something went wrong please try again later",
@@ -53,9 +53,7 @@ const ShowErrorAlert = (error) =>{
       { cancelable: false }
     );
   }
-
-}
- 
+};
 
 export default function FormComponent({ navigation }) {
   const [modalState, setModalValue] = useState(false);
@@ -64,47 +62,56 @@ export default function FormComponent({ navigation }) {
   const _isMounted = useRef(true);
 
   const handleRegistration = (values, resetForm) => {
-    
     setLoading(true);
     let emailId = values.firstName + "." + values.lastName + "@nihilent.com";
     if (role != "Role") {
-      db.collection("users")
-        .add({
-          firstName: values.firstName,
-          lastName: values.lastName,
-          password: values.password,
-          role: role,
-          email: emailId,
-        })
-        .then(function (docRef) {
+      let batch = db.batch();
+      let user = db.collection("users").doc(emailId);
+      batch.set(user, {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        password: values.password,
+        role: role,
+        email: emailId,
+        managers: ["Ajit Salvi,Ashok Thube"],
+        location: "Pune",
+      });
+
+      let leaveStatus = db.collection("userLeaveStatus").doc(emailId);
+      batch.set(leaveStatus, {
+        availableBalance: { casual: 6, sick: 6, privilege: 6 },
+        carryForwardLeave: { casual: 0, sick: 0, privilege: 0 },
+        currentYearLeave: {  casual: 6, sick: 6, privilege: 0},
+        leaveApplied: {  casual: 0, sick: 0, privilege: 0 },
+        leaveTaken: {  casual: 0, sick: 0, privilege: 0 },
+        total: { casual: 0, sick: 0, privilege: 0 },
+        users: db.doc('users/' + emailId)
+      });
+
+      batch
+        .commit()
+        .then(
+          function () {
           if (_isMounted.current) { 
-            setLoading(false)
+            console.log("Written to firestore");
+            setLoading(false);
             resetForm();
-            console.log("Document written with ID: ", docRef.id);
             navigation.navigate("RegistrationSuccessful", {
               emailId: emailId,
-              token: docRef.id,
+              token: emailId,
             });
-         }
+          }
         })
-        .catch(function (error) {
+        .catch((err) =>  {
+          console.log(err);
           setLoading(false);
-          console.error("Error adding document: ", error);
-          ShowErrorAlert;
-        });
+          ShowErrorAlert()});
     } else {
-      ShowErrorAlert("Role")
       setLoading(false);
+      ShowErrorAlert("Role"); 
     }
   };
 
-
-  const showRoleAlert = () => {
-    const ShowErrorAlert = () =>
-      Alert.alert("Error", "Please select the Role", [
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ]);
-  };
   const reset = (val) => {
     val();
   };
@@ -115,12 +122,13 @@ export default function FormComponent({ navigation }) {
   };
 
   useEffect(() => {
-    return () => { // ComponentWillUnmount in Class Component
-         setLoading(false)
-        _isMounted.current = false;
-    }
+    return () => {
+      console.log("played")
+      _isMounted.current = false;
+      setLoading(false);
+    };
   }, []);
-  
+
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

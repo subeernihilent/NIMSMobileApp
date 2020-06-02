@@ -5,9 +5,11 @@ export const globalStyles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 25,
+        backgroundColor:'#fff'
     },
     logo: {
-        alignSelf:'center'
+        alignSelf:'center',
+        marginVertical:50
     },
     inputBox: {
         borderRadius: 8,

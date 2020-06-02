@@ -7,7 +7,6 @@ if (!global.atob) {
   global.atob = decode;
 }
 import { View, ActivityIndicator, Button } from "react-native";
-// import Main from "./Screens/Home";
 import About from "./Screens/About";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthContext } from "./Context/AuthContext";
@@ -15,6 +14,8 @@ import LoginStack from "./routes/LoginStack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { AsyncStorage } from 'react-native';
 import HomeStack from './routes/MainStack'
+import  CustomDrawerContent from './routes/CustomDrawerContent'
+import ReviewStack from './routes/ReviewStack'
 
 
 
@@ -132,8 +133,9 @@ export default function App() {
     <AuthContext.Provider value={authContext}>
       <NavigationContainer >
         {loginState.userToken != null ? (
-          <Drawer.Navigator>
-            <Drawer.Screen name="Main" component={HomeStack} />
+         <Drawer.Navigator drawerContent={(props) => <CustomDrawerContent {...props} />}>
+            <Drawer.Screen name="NIMS" component={HomeStack} />
+            <Drawer.Screen name="reviewRequest" component={ReviewStack} />
             <Drawer.Screen name="About" component={About} />
           </Drawer.Navigator>
         ) : (

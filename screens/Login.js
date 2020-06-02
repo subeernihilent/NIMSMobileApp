@@ -51,7 +51,7 @@ export default function Login({ navigation }) {
       <ScrollView>
         <Image
           style={globalStyles.logo}
-          source={require("../assets/nims_logo.gif")}
+          source={require("../assets/nims_logo.png")}
         />
 
         <Formik

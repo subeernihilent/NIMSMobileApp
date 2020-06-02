@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import Home from "../Screens/Home";
 import ApplyLeave from "../Screens/ApplyLeave";
 import Header from '../Components/Header';
+import ApplyLeaveSecondScreen from '../Screens/ApplyLeaveSecondScreen'
 
 
 const Stack = createStackNavigator()
@@ -10,10 +11,10 @@ const Stack = createStackNavigator()
 export default function HomeStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="NIMS"
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#66cdf3",
+          backgroundColor: "#439dbb",
         },
         headerTintColor: "#fff",
         headerTitleAlign: "center",
@@ -23,19 +24,26 @@ export default function HomeStack() {
       }}
     >
       <Stack.Screen
-        name="Main"
+        name="NIMS"
         component={Home}
         options={({ navigation }) => {
           return {
-            headerTitle: () => <Header navigation={navigation} title={'Main'}/>,
+            headerTitle: () => <Header navigation={navigation} title={'NIMS'}/>,
           };
         }}
       />
       <Stack.Screen
-        name="Apply Leave"
+        name="ApplyLeave"
         component={ApplyLeave}
         options={{
           title: "ApplyLeave",
+        }}
+      />
+      <Stack.Screen
+        name="ApplyLeaveSecondScreen"
+        component={ApplyLeaveSecondScreen}
+        options={{
+          title: "",
         }}
       />
     </Stack.Navigator>
