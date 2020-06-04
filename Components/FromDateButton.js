@@ -10,10 +10,9 @@ import CheckBox from "react-native-check-box";
 import { AntDesign } from "@expo/vector-icons";
 import {Calendar} from 'react-native-calendars';
 
-export default function FromDate() {
+export default function FromDate({onPress}) {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [toDate, setToDate] = useState("to Date");
   const [fromDate, setFromDate] = useState("From Date");
   
   return (
@@ -34,7 +33,7 @@ export default function FromDate() {
         onPress={() => setModalVisible(true)}
       >
         <AntDesign name="calendar" size={24} color="black" />
-        <Text style={styles.fromDateText}>28th May 2020</Text>
+        <Text style={styles.fromDateText}>{fromDate}</Text>
       </TouchableOpacity>
 
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
@@ -45,11 +44,10 @@ export default function FromDate() {
             maxDate={"2021-01-01"}
             monthFormat={"MMM yyyy"}
             onDayPress={(day) => {
-              console.log("selected day", day.dateString);
               setFromDate(day.dateString);
-              setToDate("to Date");
-              setModalVisible(false)
-             // setShow2(false);
+              onPress(day.dateString);
+              setModalVisible(false);
+              // setShow2(false);
             }}
           />
         </View>

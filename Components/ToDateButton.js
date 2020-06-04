@@ -1,37 +1,54 @@
 import React ,{useState}from 'react';
-import { StyleSheet, Text, View,TouchableOpacity,Modal} from 'react-native';
+import { StyleSheet, Text, View,TouchableOpacity,Modal,Alert} from 'react-native';
 import { AntDesign } from "@expo/vector-icons";
 import {Calendar} from 'react-native-calendars';
 
 
-export default function ToDate( ) {
+export default function ToDate({minimumDate,onPress}) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [toDate, setToDate] = useState("to Date");
-  const [fromDate, setFromDate] = useState("From Date");
+  const [toDate, setToDate] = useState("To Date");
+  
+  const alertForSecondDate = () =>{
+    Alert.alert(
+      "Not allowed",
+      "Please select from date first",
+      [
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ],
+      { cancelable: false }
+    );
+  }
+    
+  const handleFromDateValidation = () => {
+    if (minimumDate != "From Date") {
+      setModalVisible(true);
+    }else {
+      alertForSecondDate();
+    }
+    
+  }
+
     return (
-      <View >
-           
+      <View >   
         <View style={styles.checkBoxContainer}>
           <Text style={styles.typeText}>To Date :</Text>
         </View>
-        <TouchableOpacity style={styles.fromDateContainer} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity style={styles.fromDateContainer} onPress={handleFromDateValidation}>
           <AntDesign name="calendar" size={24} color="black" />
-          <Text style={styles.fromDateText}>31th May 2020</Text>
+          <Text style={styles.fromDateText}>{toDate}</Text>
         </TouchableOpacity>
 
         <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalView}>
           <Calendar
             style={styles.calendarView}
-            minDate={"2020-01-01"}
+            minDate={minimumDate}
             maxDate={"2021-01-01"}
             monthFormat={"MMM yyyy"}
             onDayPress={(day) => {
-              console.log("selected day", day.dateString);
-              setFromDate(day.dateString);
-              setToDate("to Date");
+              setToDate(day.dateString);
+              onPress(day.dateString)
               setModalVisible(false)
-             // setShow2(false);
             }}
           />
         </View>

@@ -9,44 +9,40 @@ import {
 } from "react-native";
 import { globalStyles } from "../styles/global";
 import LeaveStaus from "../Components/LeaveStatus";
-import { Entypo } from "@expo/vector-icons";
-
-import { AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import useNavigateLock from "../Hooks/Lock";
 import FromDate from "../Components/FromDateButton"
 import ToDate from "../Components/ToDateButton"
-
+import LeaveType from "../Components/LeaveTypeButton"
+import ManagerType from "../Components/SelectManagerButton"
 
 export default function ApplyLeave({ navigation }) {
   const lock = useNavigateLock();
   const ApplyLeaveSecondScreen = () =>
     lock() && navigation.push("ApplyLeaveSecondScreen");
   const goLeaveStatus = () => lock() && navigation.push("LeaveStatus");
+  const [fromDate, setFromDate] = useState("From Date");
+  const [toDate, setToDate] = useState("To Date");
+  const retriveDateFirstDate = (firstDate) => {
+       setFromDate(firstDate)
+  }
+
+  const retriveSecondDate = (secondDate) => {
+    setToDate(secondDate)
+}
 
   return (
     <View style={globalStyles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <LeaveStaus navigation={goLeaveStatus} />
         <View>
-          <Text style={styles.typeText}>Leave Type :</Text>
-          <TouchableOpacity style={styles.leaveType}>
-            <Text style={styles.selectText}>Sick</Text>
-            <Entypo name="select-arrows" size={24} color="grey" />
-          </TouchableOpacity>
-          <Text style={styles.typeText}>Approver :</Text>
-          <TouchableOpacity style={styles.leaveType}>
-            <Text style={styles.selectText}>Ashok Thube</Text>
-            <Entypo name="select-arrows" size={24} color="grey" />
-          </TouchableOpacity>
+          <LeaveType/>
+          <ManagerType/>
         </View>
-        <FromDate />
-        <ToDate />
-        <TouchableOpacity
-          style={styles.nextButton}
-          onPress={ApplyLeaveSecondScreen}
-        >
-          <MaterialIcons name="navigate-next" size={44} color="black" />
+        <FromDate onPress={retriveDateFirstDate} />
+        <ToDate minimumDate={fromDate} onPress={retriveSecondDate} />
+        <TouchableOpacity style={styles.nextButton} onPress={ApplyLeaveSecondScreen}>
+        <MaterialIcons name="navigate-next" size={44} color="black" />
         </TouchableOpacity>
       </ScrollView>
     </View>
