@@ -7,6 +7,9 @@ import ApplyLeaveSecondScreen from '../Screens/ApplyLeaveSecondScreen'
 import LeaveStatus from '../Screens/LeaveStatus'
 
 
+import Timesheet from '../Screens/Timesheet';
+import TimesheetSecondScreen from '../Screens/TimesheetSecondScreen';
+import TimesheetDetailScreen from '../Screens/TimesheetDetailScreen';
 
 const Stack = createStackNavigator()
 
@@ -55,6 +58,28 @@ export default function HomeStack() {
         component={LeaveStatus}
         options={{
           title: "Leave Status",
+        }}
+      />
+      <Stack.Screen
+        name="Timesheet"
+        component={Timesheet}
+        options={{
+          title: "Timesheet",
+        }}
+      />
+       <Stack.Screen
+        name="TimesheetSecondScreen"
+        component={TimesheetSecondScreen}
+        options={{
+          title: "Timesheet",
+        }}
+      />
+
+<Stack.Screen
+        name="TimesheetDetailScreen"
+        component={TimesheetDetailScreen}
+        options={{
+          title: "Timesheet",
         }}
       />
     </Stack.Navigator>

@@ -3,6 +3,7 @@ import { DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import React from "react";
 import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import { AuthContext } from "../Context/AuthContext";
+import { DrawerActions } from '@react-navigation/native';
 
 
 export default function CustomDrawerContent(props) {
@@ -75,7 +76,7 @@ export default function CustomDrawerContent(props) {
                             />
                         )}
                         label="Logout"
-                        onPress={() => { logOut() }}
+                        onPress={() => { logOut()}}
                     />
 
                 </View>

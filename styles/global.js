@@ -5,11 +5,11 @@ export const globalStyles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 25,
-        backgroundColor:'#fff'
+        backgroundColor: '#fff'
     },
     logo: {
-        alignSelf:'center',
-        marginVertical:50
+        alignSelf: 'center',
+        marginVertical: 50
     },
     inputBox: {
         borderRadius: 8,
@@ -19,5 +19,14 @@ export const globalStyles = StyleSheet.create({
         margin: 5,
         padding: 15,
     },
-   
+    dropdownStyle: {
+        marginVertical: 7,
+        padding: 3,
+        borderWidth: 1,
+        borderColor: '#439dbb',
+        borderRadius: 10,
+    },
+    dropdownText: {
+        color: 'grey'
+    },
 })

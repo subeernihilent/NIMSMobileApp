@@ -8,11 +8,20 @@ import useNavigateLock from '../Hooks/Lock'
 export default function Home({navigation}){
     const lock = useNavigateLock()
     const goAppleave = () => lock() && navigation.push('ApplyLeave')
+    const goTimeSheet = () => lock() && navigation.push('Timesheet')
     const { logOut } = React.useContext(AuthContext);
     const [menuList,setMenuList] = useState([{ id: 1, value: "Time Sheet", image:  require('../assets/timeSheet.png')},
     { id: 2, value: "Apply Leaves",image:  require('../assets/leave.png') },
    ])
 
+   const pressHanlder=(id)=>{
+     if(id==1){
+      goTimeSheet()
+     }
+     else{
+      goAppleave()
+     }
+   }
   
     return (
       <View style={globalStyles.container}>
@@ -20,7 +29,7 @@ export default function Home({navigation}){
           keyExtractor={(item) => item.id.toString()}
           data={menuList}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={goAppleave}>
+              <TouchableOpacity onPress={()=> pressHanlder(item.id)}>
               <View style={styles.listView}>
                 <Image style={styles.image} source={item.image} />
                 <Text style={styles.text}>{item.value}</Text>
