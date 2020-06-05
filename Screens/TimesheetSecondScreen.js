@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, ScrollView, TouchableOpacity, View, TextInput, Picker } from 'react-native';
-import { globalStyles } from '../styles/global';
-import { AuthContext } from "../Context/AuthContext";
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import ProjectDropdown from '../Components/ProjectDropdown';
+import SubtaskDropdown from '../Components/SubtaskDropdown';
+import TaskDropdown from '../Components/TaskDropdown';
+import { globalStyles } from '../styles/global';
 
 
-
-export default function TimesheetSecondScreen({navigation}) {
+export default function TimesheetSecondScreen({ navigation }) {
     return (
         <View style={globalStyles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -31,28 +32,13 @@ export default function TimesheetSecondScreen({navigation}) {
                 </View>
 
                 <Text style={styles.text}>Project Code</Text>
-                <View style={globalStyles.dropdownStyle}>
-                    <Picker label="dropdown" selectedValue={'Select'} style={globalStyles.dropdownText}>
-                        <Picker.Item label="Select" value="0" />
-                        <Picker.Item label="Nedbank" value="Nedbank" />
-                    </Picker>
-                </View>
+                <ProjectDropdown />
 
                 <Text style={styles.text}>Task Name</Text>
-                <View style={globalStyles.dropdownStyle}>
-                    <Picker label="dropdown" selectedValue={'Select'} style={globalStyles.dropdownText}>
-                        <Picker.Item label="Select" value="0" />
-                        <Picker.Item label="Development" value="Development" />
-                    </Picker>
-                </View>
+                <TaskDropdown />
 
                 <Text style={styles.text}>Sub Task</Text>
-                <View style={globalStyles.dropdownStyle}>
-                    <Picker label="dropdown" selectedValue={'Select'} style={globalStyles.dropdownText}>
-                        <Picker.Item label="Select" value="0" />
-                        <Picker.Item label="Coding" value="Coding" />
-                    </Picker>
-                </View>
+                <SubtaskDropdown />
 
                 <Text style={styles.text}>Remarks</Text>
                 <TextInput style={styles.inputBox}
@@ -80,7 +66,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop:5,
+        marginTop: 5,
     },
     dateText: {
         color: 'grey',
@@ -90,7 +76,8 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: 'bold',
         fontSize: 15,
-        marginTop: 10
+        marginTop: 10,
+        marginBottom: 5,
     },
     timeDayView: {
         flexDirection: 'row',
@@ -102,7 +89,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: '#fff',
         padding: 13,
-        marginTop:5,
+        marginTop: 5,
     },
     inputBox: {
         borderRadius: 8,

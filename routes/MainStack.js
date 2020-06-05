@@ -5,8 +5,6 @@ import ApplyLeave from "../Screens/ApplyLeave";
 import Header from '../Components/Header';
 import ApplyLeaveSecondScreen from '../Screens/ApplyLeaveSecondScreen'
 import LeaveStatus from '../Screens/LeaveStatus'
-
-
 import Timesheet from '../Screens/Timesheet';
 import TimesheetSecondScreen from '../Screens/TimesheetSecondScreen';
 import TimesheetDetailScreen from '../Screens/TimesheetDetailScreen';
@@ -67,7 +65,7 @@ export default function HomeStack() {
           title: "Timesheet",
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="TimesheetSecondScreen"
         component={TimesheetSecondScreen}
         options={{
@@ -75,7 +73,7 @@ export default function HomeStack() {
         }}
       />
 
-<Stack.Screen
+      <Stack.Screen
         name="TimesheetDetailScreen"
         component={TimesheetDetailScreen}
         options={{

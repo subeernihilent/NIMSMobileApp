@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, ScrollView, TouchableOpacity, View, SafeAreaView, FlatList } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, SafeAreaView, FlatList } from 'react-native';
 import { globalStyles } from '../styles/global';
 import { AuthContext } from "../Context/AuthContext";
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
@@ -21,25 +21,25 @@ export default function TimesheetDetailScreen({ navigation }) {
                 <Text style={styles.text}>40 hr</Text>
             </View>
 
-             <FlatList
-                    keyExtractor={(item) => item.id.toString()}
-                    data={detailList}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => navigation.push('TimesheetSecondScreen')}>
-                            <View style={styles.detailView}>
-                                <Text>{item.day}</Text>
-                                <View style={styles.view}>
-                                    <Text>{item.task}</Text>
-                                    <Text>{item.subTask}</Text>
-                                    <Text>{item.remarks}</Text>
-                                </View>
-                                <Text>{item.time}</Text>
+            <FlatList
+                keyExtractor={(item) => item.id.toString()}
+                data={detailList}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => navigation.push('TimesheetSecondScreen')}>
+                        <View style={styles.detailView}>
+                            <Text>{item.day}</Text>
+                            <View style={styles.view}>
+                                <Text>{item.task}</Text>
+                                <Text>{item.subTask}</Text>
+                                <Text>{item.remarks}</Text>
                             </View>
-                        </TouchableOpacity>
-                    )}
-                />
-            
-          <TouchableOpacity style={styles.button} activeOpacity={0.6}>
+                            <Text>{item.time}</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+            />
+
+            <TouchableOpacity style={styles.button} activeOpacity={0.6}>
                 <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
 
@@ -48,7 +48,7 @@ export default function TimesheetDetailScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flex: 1,
     },
     calendarView: {
@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         padding: 15,
-        margin:15,
-       },
+        margin: 15,
+    },
     buttonText: {
         color: '#ffffff',
         fontSize: 18
