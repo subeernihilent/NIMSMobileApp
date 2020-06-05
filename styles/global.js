@@ -20,11 +20,13 @@ export const globalStyles = StyleSheet.create({
         padding: 15,
     },
     dropdownStyle: {
-        marginVertical: 7,
-        padding: 3,
+        padding: 12,
         borderWidth: 1,
         borderColor: '#439dbb',
-        borderRadius: 10,
+        borderRadius: 8,
+        justifyContent:'space-between',
+        flexDirection:'row',
+        alignItems:'center'
     },
     dropdownText: {
         color: 'grey'

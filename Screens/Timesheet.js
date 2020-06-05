@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, FlatList, TouchableOpacity, View, Image, Picker } from 'react-native';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import ApproverDropdown from '../Components/ApproverDropdown';
 import { globalStyles } from '../styles/global';
-import { AuthContext } from "../Context/AuthContext";
-import { AntDesign,MaterialIcons } from '@expo/vector-icons';
 
 
-export default function Timesheet({navigation}) {
+export default function Timesheet({ navigation }) {
     return (
-        <View style={globalStyles.container}>
+        <ScrollView style={globalStyles.container} showsVerticalScrollIndicator={false}>
 
             <View style={styles.branchView}>
                 <Text style={styles.text}>Branch: </Text>
@@ -22,19 +22,13 @@ export default function Timesheet({navigation}) {
             </View>
 
             <Text style={styles.approverText}>Approver Name</Text>
-
-            <View style={globalStyles.dropdownStyle}>
-                <Picker label="dropdown" selectedValue={'Ashok Thube'} style={globalStyles.dropdownText}>
-                    <Picker.Item label="Ashok Thube" value="Ashok Thube" />
-                    <Picker.Item label="Ajit Salvi" value="Ajit Salvi" />
-                </Picker>
-            </View>
+            <ApproverDropdown />
 
             <TouchableOpacity style={styles.nextButton} onPress={() => navigation.push('TimesheetSecondScreen')}>
-          <MaterialIcons  name="navigate-next" size={44} color="black" />
-          </TouchableOpacity>
-           
-        </View>
+                <MaterialIcons name="navigate-next" size={44} color="black" />
+            </TouchableOpacity>
+
+        </ScrollView>
     );
 }
 
@@ -57,22 +51,22 @@ const styles = StyleSheet.create({
         fontSize: 18,
         margin: 10,
     },
-    approverText:{
+    approverText: {
         color: 'black',
         fontWeight: '500',
         fontSize: 20,
-        marginBottom:10
+        marginBottom: 10
     },
-    nextButton:{
-        marginTop:100,
-        borderColor:'#439dbb',
-        borderRadius:40,
-        borderWidth:2,
-        width:80,
-        height:80,
-        justifyContent:'center',
-        alignItems:'center',
-        alignSelf:'flex-end',
-      },
+    nextButton: {
+        marginTop: 100,
+        borderColor: '#439dbb',
+        borderRadius: 40,
+        borderWidth: 2,
+        width: 80,
+        height: 80,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+    },
 
 })
