@@ -76,6 +76,7 @@ export default function Timesheet({ navigation }) {
                 .where("email", "==", userEmail)
                 .get()
                 .then(function (querySnapshot) {
+                    console.log("user data",querySnapshot)
                     if (!querySnapshot.empty) {
                         querySnapshot.forEach(documentSnapshot => {
                             setLocation(documentSnapshot.data().location);
