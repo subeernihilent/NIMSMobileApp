@@ -1,43 +1,74 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Image ,FlatList} from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, ActivityIndicator ,FlatList,Alert} from "react-native";
 import { globalStyles } from "../styles/global";
+import {db} from '../Enviroment/FirebaseConfig';
+import Async from "../Utils/AsyncKey"
+import { AsyncStorage } from 'react-native';
+
 
 export default function LeaveStatus() {
-  const [menuList, setMenuList] = useState([
-    {
-      id: 1,
-      title: "Total :",
-      values: {casual:"6",sick:"6",privilege:"6"},
-    },
-    {
-      id: 2,
-      title: "Current Year Leave :",
-      values: {casual:"6",sick:"6",privilege:"6"},
-    },
-    {
-      id: 3,
-      title: "Leave Taken :",
-      values: {casual:"6",sick:"6",privilege:"6"},
-    },
-    {
-      id: 4,
-      title: "Leave Applied :",
-      values: {casual:"6",sick:"6",privilege:"6"},
-    },
-    {
-      id: 5,
-      title: "Available Balance :",
-      values: {casual:"6",sick:"6",privilege:"6"},
-    },
+  const [isLoading,setLoading] = useState(false)
+  const [list,setList] = useState([])
 
-  ]);
+  const errorAlert = (message) =>{
+    Alert.alert(
+      "Something went wrong",
+      message,
+      [
+        { text: "OK", onPress: () => console.log("OK Pressed") }
+      ],
+      { cancelable: false }
+    );
+  }
+
+  const getLeaveStatus =  async () => {
+    try {
+      setLoading(true)
+      const email = await AsyncStorage.getItem(Async.EMAIL_KEY)
+      if(email !== null) {
+        var docRef = db.collection("userLeaveStatus").doc(email);
+        docRef.get().then(function(doc) {
+          if (doc.exists) {
+               setLoading(false)
+              let userLeaveInfo = doc.data();
+              let userLeaveArray = userLeaveInfo["Leaves"]    
+              userLeaveArray.forEach(element =>
+                setList(oldArray => [...oldArray,element])
+              );             
+    
+          } else {
+              setLoading(false)
+              errorAlert("No such document!");
+          }
+      }).catch(function(error) {
+           setLoading(false)
+           errorAlert(error);
+      });
+      }
+    } catch(e) {
+    setLoading(false);
+       errorAlert('not able to retrive email');
+   }
+  }
+
+  useEffect(() => {
+    getLeaveStatus();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={globalStyles.container}>
       <FlatList
         showsVerticalScrollIndicator = {false}
-        keyExtractor={(item) => item.id.toString()}
-        data={menuList}
+        keyExtractor={(index) => '_' + Math.random().toString(36).substr(2, 9)}
+        data={list}
         renderItem={({ item }) => (
           <View>
             <View style={[styles.listView,{backgroundColor: item.title == "Total :"?"#94ffa5" : "#d8edf3"}]}>

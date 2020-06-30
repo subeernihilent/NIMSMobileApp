@@ -58,11 +58,10 @@ const ShowErrorAlert = (error) => {
 export default function FormComponent({ navigation }) {
   const [modalState, setModalValue] = useState(false);
   const [role, setRole] = useState("Role");
-  const [isLoading, setLoading] = useState(false);
   const _isMounted = useRef(true);
 
   const handleRegistration = (values, resetForm) => {
-    setLoading(true);
+   
     let emailId = values.firstName + "." + values.lastName + "@nihilent.com";
     if (role != "Role") {
       let batch = db.batch();
@@ -73,19 +72,30 @@ export default function FormComponent({ navigation }) {
         password: values.password,
         role: role,
         email: emailId,
-        managers: ["Ajit Salvi,Ashok Thube"],
+        managers: ["Ajit Salvi","Ashok Thube"],
         location: "Pune",
       });
 
       let leaveStatus = db.collection("userLeaveStatus").doc(emailId);
       batch.set(leaveStatus, {
-        availableBalance: { casual: 6, sick: 6, privilege: 6 },
-        carryForwardLeave: { casual: 0, sick: 0, privilege: 0 },
-        currentYearLeave: {  casual: 6, sick: 6, privilege: 0},
-        leaveApplied: {  casual: 0, sick: 0, privilege: 0 },
-        leaveTaken: {  casual: 0, sick: 0, privilege: 0 },
-        total: { casual: 0, sick: 0, privilege: 0 },
-        users: db.doc('users/' + emailId)
+        Leaves:[
+          {
+            title: "Available Balance :",
+            values: { casual: 6, sick: 6, privilege: 6 },
+          },
+          {
+            title: "Carry Forward Leave :",
+            values: { casual: 6, sick: 6, privilege: 6 },
+          },
+          {
+            title: "Current Year Leave :",
+            values: { casual: 6, sick: 6, privilege: 6 },
+          },
+          { title: "Leave Applied :", values: { casual: 6, sick: 6, privilege: 6 } },
+          { title: "Leave Taken :", values: { casual: 6, sick: 6, privilege: 6 } },
+          { title: "Total :", values: { casual: 6, sick: 6, privilege: 6 } },
+        ],
+       useRef: db.doc("users/" + emailId)
       });
 
       batch
@@ -94,7 +104,6 @@ export default function FormComponent({ navigation }) {
           function () {
           if (_isMounted.current) { 
             console.log("Written to firestore");
-            setLoading(false);
             resetForm();
             navigation.navigate("RegistrationSuccessful", {
               emailId: emailId,
@@ -104,10 +113,8 @@ export default function FormComponent({ navigation }) {
         })
         .catch((err) =>  {
           console.log(err);
-          setLoading(false);
           ShowErrorAlert()});
     } else {
-      setLoading(false);
       ShowErrorAlert("Role"); 
     }
   };
@@ -120,22 +127,6 @@ export default function FormComponent({ navigation }) {
     setRole(role);
     setModalValue(false);
   };
-
-  useEffect(() => {
-    return () => {
-      console.log("played")
-      _isMounted.current = false;
-      setLoading(false);
-    };
-  }, []);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
 
   return (
     <View style={{ ...globalStyles.container, ...styles.container }}>

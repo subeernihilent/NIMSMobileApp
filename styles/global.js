@@ -31,4 +31,11 @@ export const globalStyles = StyleSheet.create({
     dropdownText: {
         color: 'grey'
     },
+    errorText: {
+        color: 'crimson',
+        fontWeight: '500',
+        marginBottom: 2,
+        marginTop: 2,
+        textAlign: 'center',
+      }
 })

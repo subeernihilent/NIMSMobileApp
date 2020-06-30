@@ -47,7 +47,6 @@ export default function FromDate({onPress}) {
               setFromDate(day.dateString);
               onPress(day.dateString);
               setModalVisible(false);
-              // setShow2(false);
             }}
           />
         </View>

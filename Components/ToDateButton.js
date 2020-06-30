@@ -1,12 +1,12 @@
-import React ,{useState}from 'react';
+import React ,{useState,useEffect}from 'react';
 import { StyleSheet, Text, View,TouchableOpacity,Modal,Alert} from 'react-native';
 import { AntDesign } from "@expo/vector-icons";
 import {Calendar} from 'react-native-calendars';
 
 
-export default function ToDate({minimumDate,onPress}) {
+export default function ToDate({minimumDate,onPress,toDate}) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [toDate, setToDate] = useState("To Date");
+  //const [toDate, setToDate] = useState("To Date");
   
   const alertForSecondDate = () =>{
     Alert.alert(
@@ -25,7 +25,6 @@ export default function ToDate({minimumDate,onPress}) {
     }else {
       alertForSecondDate();
     }
-    
   }
 
     return (
@@ -46,7 +45,7 @@ export default function ToDate({minimumDate,onPress}) {
             maxDate={"2021-01-01"}
             monthFormat={"MMM yyyy"}
             onDayPress={(day) => {
-              setToDate(day.dateString);
+              // setToDate(day.dateString);
               onPress(day.dateString)
               setModalVisible(false)
             }}
