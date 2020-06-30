@@ -1,38 +1,18 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, FlatList, TouchableOpacity, View, Modal } from 'react-native';
-import { globalStyles } from '../styles/global';
-import { AuthContext } from "../Context/AuthContext";
-import { Entypo } from '@expo/vector-icons';
+import React from 'react';
+import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
-export default function ApproverDropdown() {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [taskName, setTaskName] = useState("Select");
-
-    const [taskList, setTaskList] = useState([{ id: 1, name: "Development" },
-    { id: 2, name: "Design" },]);
-
-    onItemSelected = (taskName) => {
-        setTaskName(taskName);
-        setModalOpen(false);
-    }
-
+export default function TaskDropdown({ taskList, modalClose, onPress }) {
     return (
         <View>
-            <TouchableOpacity style={globalStyles.dropdownStyle} onPress={() => setModalOpen(true)}>
-                <Text>{taskName}</Text>
-                <Entypo name="select-arrows" size={24} color="grey" />
-            </TouchableOpacity>
-
-            <Modal visible={modalOpen} animationType='slide' transparent={true}>
+            <Modal visible={modalClose} animationType='slide' transparent={true}>
                 <View style={styles.modalOuterView}>
                     <View style={styles.modalInnerView}>
                         <FlatList
-                            keyExtractor={(item) => item.id.toString()}
                             data={taskList}
                             renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => onItemSelected(item.name)}>
-                                    <Text style={styles.text}>{item.name}</Text>
+                                <TouchableOpacity onPress={() => onPress(item.key)}>
+                                    <Text style={styles.text}>{item.key}</Text>
                                 </TouchableOpacity>
                             )}
                         />

@@ -1,38 +1,19 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, FlatList, TouchableOpacity, View, Modal } from 'react-native';
-import { globalStyles } from '../styles/global';
-import { AuthContext } from "../Context/AuthContext";
-import { Entypo } from '@expo/vector-icons';
+import React from 'react';
+import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
-export default function ApproverDropdown() {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [approverName, setApproverName] = useState("Select");
-
-    const [approverList, setapproverList] = useState([{ id: 1, name: "Ashok Thube" },
-    { id: 2, name: "Ajit Salvi" },]);
-
-    onItemSelected = (approverName) => {
-        setApproverName(approverName);
-        setModalOpen(false);
-    }
-
+export default function ApproverDropdown({ managerName, modalVisibility, onPress }) {
     return (
         <View>
-            <TouchableOpacity style={globalStyles.dropdownStyle} onPress={() => setModalOpen(true)}>
-                <Text>{approverName}</Text>
-                <Entypo name="select-arrows" size={24} color="grey" />
-            </TouchableOpacity>
-
-            <Modal visible={modalOpen} animationType='slide' transparent={true}>
+            <Modal visible={modalVisibility} animationType='slide' transparent={true}>
                 <View style={styles.modalOuterView}>
                     <View style={styles.modalInnerView}>
                         <FlatList
-                            keyExtractor={(item) => item.id.toString()}
-                            data={approverList}
+                            keyExtractor={(item, index) => index.toString()}
+                            data={managerName}
                             renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => onItemSelected(item.name)}>
-                                    <Text style={styles.text}>{item.name}</Text>
+                                <TouchableOpacity onPress={() => onPress(item)}>
+                                    <Text style={styles.text}>{item}</Text>
                                 </TouchableOpacity>
                             )}
                         />

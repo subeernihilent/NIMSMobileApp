@@ -2,18 +2,19 @@ import React from 'react';
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
-export default function SubtaskDropdown({ subTaskList, modalClose, onPress }) {
+export default function WeekdayButton({ dateList, modalVisibility, onPress }) {
+
     return (
         <View>
-            <Modal visible={modalClose} animationType='slide' transparent={true}>
+            <Modal visible={modalVisibility} animationType='slide' transparent={true}>
                 <View style={styles.modalOuterView}>
                     <View style={styles.modalInnerView}>
                         <FlatList
                             keyExtractor={(item, index) => index.toString()}
-                            data={subTaskList}
+                            data={dateList}
                             renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => onPress(item)}>
-                                    <Text style={styles.text}>{item}</Text>
+                                <TouchableOpacity onPress={() => onPress(item.week)}>
+                                    <Text style={styles.text}>{item.week}</Text>
                                 </TouchableOpacity>
                             )}
                         />
@@ -40,5 +41,4 @@ const styles = StyleSheet.create({
         marginVertical: 5,
         fontSize: 17,
     },
-
 })

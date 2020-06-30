@@ -1,45 +1,124 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, SafeAreaView, FlatList } from 'react-native';
-import { globalStyles } from '../styles/global';
-import { AuthContext } from "../Context/AuthContext";
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View, AsyncStorage } from 'react-native';
+import { db } from "../Enviroment/FirebaseConfig";
+if (!global.btoa) {
+    global.btoa = encode;
+}
+if (!global.atob) {
+    global.atob = decode;
+}
+export default function TimesheetDetailScreen({ navigation, route }) {
+    const [detailList, setDetailList] = useState([]);
+    const [isLoading, setLoading] = useState(true);
+    let userEmail;
+
+    useEffect(() => {
+        setDetailList(route.params.detailList);
+        setTimeout(async () => {
+            userEmail = null;
+            try {
+                userEmail = await AsyncStorage.getItem("userToken");
+                console.log("userEmail", userEmail);
+            } catch (error) {
+                consol.log(error);
+            }
+        }, 2000);
+        setLoading(false);
+    }, []);
+
+    const onSubmitClick = () => {
+        // setLoading(true);
+        let batch = db.batch();
+        let timesheet = db.collection("Timesheet").doc(userEmail);
+        batch.set(timesheet, {
+            timeSheet: [{
+                approvedBy: route.params.approverName,
+                projectCode: route.params.projectName,
+                weekDate: route.params.dateName,
+                mon: {
+                    task: detailList.filter((item) => item.day === 'Mon').map(({ task }) => ({ task })),
+                    subtask: detailList.filter((item) => item.day === 'Mon').map(({ subTask }) => ({ subTask })),
+                    time: detailList.filter((item) => item.day === 'Mon').map(({ time }) => ({ time })),
+                    remark: detailList.filter((item) => item.day === 'Mon').map(({ remark }) => ({ remark }))
+                },
+                tue: {
+                    task: detailList.filter((item) => item.day === 'Tue').map(({ task }) => ({ task })),
+                    subtask: detailList.filter((item) => item.day === 'Tue').map(({ subTask }) => ({ subTask })),
+                    time: detailList.filter((item) => item.day === 'Tue').map(({ time }) => ({ time })),
+                    remark: detailList.filter((item) => item.day === 'Tue').map(({ remark }) => ({ remark }))
+                },
+                wed: {
+                    task: detailList.filter((item) => item.day === 'Wed').map(({ task }) => ({ task })),
+                    subtask: detailList.filter((item) => item.day === 'Wed').map(({ subTask }) => ({ subTask })),
+                    time: detailList.filter((item) => item.day === 'Wed').map(({ time }) => ({ time })),
+                    remark: detailList.filter((item) => item.day === 'Wed').map(({ remark }) => ({ remark }))
+                },
+                thu: {
+                    task: detailList.filter((item) => item.day === 'Thu').map(({ task }) => ({ task })),
+                    subtask: detailList.filter((item) => item.day === 'Thu').map(({ subTask }) => ({ subTask })),
+                    time: detailList.filter((item) => item.day === 'Thu').map(({ time }) => ({ time })),
+                    remark: detailList.filter((item) => item.day === 'Thu').map(({ remark }) => ({ remark }))
+                },
+                fri: {
+                    task: detailList.filter((item) => item.day === 'Fri').map(({ task }) => ({ task })),
+                    subtask: detailList.filter((item) => item.day === 'Fri').map(({ subTask }) => ({ subTask })),
+                    time: detailList.filter((item) => item.day === 'Fri').map(({ time }) => ({ time })),
+                    remark: detailList.filter((item) => item.day === 'Fri').map(({ remark }) => ({ remark }))
+                },
+            }]
+        }, { merge: true });
+
+        let week = db.collection("Week")
+            .where("weekdays", "array-contains", [{ status: false, week: route.params.dateName }])
+            .get();
+
+        batch.update(week, {
+            weekdays: [{ status: true, week: route.params.dateName }]
+
+        })
+
+        batch.commit()
+            .then(function () {
+                console.log("Written to firestore");
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+                setLoading(false);
+                // ShowErrorAlert()
+            });
+    }
 
 
-export default function TimesheetDetailScreen({ navigation }) {
-
-    const [detailList, setDetailList] = useState([{ id: 1, day: "Mon", time: "8hr", task: "Development", subTask: "coding", remarks: "jjaskaskaklmxnzxnn" },
-    { id: 2, day: "Tue", time: "8hr", task: "Design", subTask: "SAS", remarks: "done with mokups" },
-    { id: 3, day: "Wed", time: "8hr", task: "Design", subTask: "SAS", remarks: "dnxbbx  bbdw" },
-    { id: 4, day: "Thu", time: "8hr", task: "Design", subTask: "SAS", remarks: "done with mokups" },
-    { id: 5, day: "Fri", time: "8hr", task: "Design", subTask: "SAS", remarks: "done with mokups" },
-    ])
+    if (isLoading) {
+        return <ActivityIndicator size='large' style={styles.activityIndicator} />
+    }
 
     return (
         <View style={styles.container}>
             <View style={styles.calendarView}>
-                <Text style={styles.text}>May 31,2020</Text>
+                <Text style={styles.text}>{route.params.dateName}</Text>
                 <Text style={styles.text}>40 hr</Text>
             </View>
 
             <FlatList
+                showsVerticalScrollIndicator={false}
                 keyExtractor={(item) => item.id.toString()}
                 data={detailList}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigation.push('TimesheetSecondScreen')}>
-                        <View style={styles.detailView}>
-                            <Text>{item.day}</Text>
-                            <View style={styles.view}>
-                                <Text>{item.task}</Text>
-                                <Text>{item.subTask}</Text>
-                                <Text>{item.remarks}</Text>
-                            </View>
-                            <Text>{item.time}</Text>
+                    <View style={styles.detailView}>
+                        <Text>{item.day}</Text>
+                        <View style={styles.view}>
+                            <Text>{item.task}</Text>
+                            <Text>{item.subTask}</Text>
+                            <Text numberOfLines={4}>{item.remark}</Text>
                         </View>
-                    </TouchableOpacity>
+                        <Text>{item.time}</Text>
+                    </View>
                 )}
             />
 
-            <TouchableOpacity style={styles.button} activeOpacity={0.6}>
+            <TouchableOpacity style={styles.button} activeOpacity={0.6} onPress={onSubmitClick}>
                 <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
 
@@ -89,5 +168,9 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#ffffff',
         fontSize: 18
+    },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center'
     },
 })
