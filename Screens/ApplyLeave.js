@@ -24,7 +24,15 @@ import { app } from "firebase";
 export default function ApplyLeave({ navigation }) {
   const lock = useNavigateLock();
   const ApplyLeaveSecondScreen = () =>
-    lock() && navigation.push("ApplyLeaveSecondScreen");
+    lock() && navigation.navigate('ApplyLeaveSecondScreen', {
+      leave: leave,
+      manager: manager,
+      fromDate: fromDate,
+      toDate: toDate,
+      halfLeave: halfLeave,
+      email: userEmail
+    });
+      
   const goLeaveStatus = () => lock() && navigation.push("LeaveStatus");
   const [fromDate, setFromDate] = useState("From Date");
   const [toDate, setToDate] = useState("To Date");
@@ -36,6 +44,9 @@ export default function ApplyLeave({ navigation }) {
   const [toDateValidation, setToDateValidation] = useState(false);
   const [leave, setLeave] = useState("Select Leave");
   const [manager, setManger] = useState("Select Manager");
+  const [halfLeave, setHalfLeave] = useState(false);
+  const [userEmail, setEmail] = useState("");
+
 
   const validationCheck = () => {
     if (leave == "Select Leave") {
@@ -50,6 +61,10 @@ export default function ApplyLeave({ navigation }) {
       ApplyLeaveSecondScreen()
     }
   };
+
+  const getHalfLeave = (toggle) => {
+    setHalfLeave(toggle)
+  }
 
   const retriveDateFirstDate = (firstDate) => {
     setFromDateValidation(false)
@@ -81,6 +96,7 @@ export default function ApplyLeave({ navigation }) {
       setLoading(true);
       const email = await AsyncStorage.getItem(Async.EMAIL_KEY);
       if (email !== null) {
+        setEmail(email);
         var docRef = db.collection("users").doc(email);
         docRef
           .get()
@@ -135,7 +151,7 @@ export default function ApplyLeave({ navigation }) {
           <ManagerType managerList={managers}  selection={managerType} manager={manager}/>
           {managerTypeValidation &&  <Text style={globalStyles.errorText}>select manager</Text>}        
         </View>
-        <FromDate onPress={retriveDateFirstDate} />
+        <FromDate onPress={retriveDateFirstDate} getHalfLeave={getHalfLeave}/>
         {fromDateValidation && <Text style={globalStyles.errorText}>select from date</Text>} 
         <ToDate
           minimumDate={fromDate}

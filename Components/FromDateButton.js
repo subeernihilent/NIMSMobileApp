@@ -10,10 +10,17 @@ import CheckBox from "react-native-check-box";
 import { AntDesign } from "@expo/vector-icons";
 import {Calendar} from 'react-native-calendars';
 
-export default function FromDate({onPress}) {
+export default function FromDate({onPress,getHalfLeave}) {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [fromDate, setFromDate] = useState("From Date");
+
+  const onClickCheckBox = () => {
+    setToggleCheckBox(!toggleCheckBox)
+    getHalfLeave(toggleCheckBox)
+    
+  }
+
   
   return (
     <View>
@@ -22,7 +29,7 @@ export default function FromDate({onPress}) {
         <View style={styles.checkBoxContainer}>
           <Text style={{ color: "green" }}>Half leave</Text>
           <CheckBox
-            onClick={() => setToggleCheckBox(!toggleCheckBox)}
+            onClick={onClickCheckBox}
             isChecked={toggleCheckBox}
             checkBoxColor="green"
           />

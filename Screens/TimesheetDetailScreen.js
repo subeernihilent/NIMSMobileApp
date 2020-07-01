@@ -68,14 +68,14 @@ export default function TimesheetDetailScreen({ navigation, route }) {
             }]
         }, { merge: true });
 
-        let week = db.collection("Week")
-            .where("weekdays", "array-contains", [{ status: false, week: route.params.dateName }])
-            .get();
+        // let week = db.collection("Week")
+        //     .where("weekdays", "array-contains", [{ status: false, week: route.params.dateName }])
+        //     .get();
 
-        batch.update(week, {
-            weekdays: [{ status: true, week: route.params.dateName }]
+        // batch.update(week, {
+        //     weekdays: [{ status: true, week: route.params.dateName }]
 
-        })
+        // })
 
         batch.commit()
             .then(function () {
