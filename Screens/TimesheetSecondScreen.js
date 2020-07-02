@@ -5,6 +5,7 @@ import ProjectDropdown from '../Components/ProjectDropdown';
 import SubtaskDropdown from '../Components/SubtaskDropdown';
 import TaskDropdown from '../Components/TaskDropdown';
 import { db } from "../Enviroment/FirebaseConfig";
+import useNavigateLock from "../Hooks/Lock";
 import { globalStyles } from '../styles/global';
 if (!global.btoa) {
     global.btoa = encode;
@@ -13,7 +14,10 @@ if (!global.atob) {
     global.atob = decode;
 }
 
+
 export default function TimesheetSecondScreen({ navigation, route }) {
+    const lock = useNavigateLock();
+
     const { location, dateName, approverName } = route.params;
     const [time, setTime] = useState('0');
 
@@ -40,6 +44,9 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
     const [detailList, setDetailList] = useState([]);
     const [count, setCount] = useState(0);
+
+    const [showNextButton, setShowNextButton] = useState(false);
+    const [showSaveButton, setShowSaveButton] = useState(true);
 
     const getData = (dayName, taskName, subtaskName, time, remark, location, approverName, dateName) => {
         setDetailList([
@@ -91,25 +98,21 @@ export default function TimesheetSecondScreen({ navigation, route }) {
         }
     }
 
-    const navigateToNextScreen = () => {
-      if (dayName == "Sun" || dayName == "Sat") {
+    const onSaveClicked = () => {
+        if (dayName == "Sun" || dayName == "Sat") {
             showAlert("Please select working day");
         }
         else if (dayName != "Select day" && projectName != "Select" && taskName != "Select" && subtaskName != "Select" && time != '0' && remark != "") {
-            if (count <= 4) {
+            if (count < 4) {
                 getData(dayName, taskName, subtaskName, time, remark);
                 showAlert("Timesheet added", dayName);
+                setCount(count + 1);
             }
             else {
-                navigation.push('TimesheetDetailScreen', {
-                    detailList: detailList,
-                    location: location,
-                    dateName: dateName,
-                    approverName: approverName,
-                    projectName: projectName,
-                });
+                getData(dayName, taskName, subtaskName, time, remark);
+                setShowNextButton(true);
+                setShowSaveButton(false);
             }
-            setCount(count + 1);
 
             // setDayName("Select day");
             setTaskName("Select");
@@ -124,6 +127,16 @@ export default function TimesheetSecondScreen({ navigation, route }) {
         else {
             showAlert("Please fill all fields");
         }
+    }
+
+    const navigateToNextScreen = () => {
+        lock() && navigation.push('TimesheetDetailScreen', {
+            detailList: detailList,
+            location: location,
+            dateName: dateName,
+            approverName: approverName,
+            projectName: projectName,
+        });
     }
 
     useEffect(() => {
@@ -185,9 +198,12 @@ export default function TimesheetSecondScreen({ navigation, route }) {
         }, 2000);
     }, []);
 
+
+
     if (loading) {
         return <ActivityIndicator size='large' style={styles.activityIndicator} />
     }
+
 
     return (
         <View style={globalStyles.container}>
@@ -262,9 +278,14 @@ export default function TimesheetSecondScreen({ navigation, route }) {
                     value={remark}
                 />
 
-                <TouchableOpacity style={styles.nextButton} onPress={navigateToNextScreen}>
+                {showSaveButton && <TouchableOpacity style={styles.saveButton} onPress={onSaveClicked}>
+                    <Text style={styles.saveButtonText}>SAVE</Text>
+                </TouchableOpacity>}
+
+
+                {showNextButton && <TouchableOpacity style={styles.nextButton} onPress={navigateToNextScreen}>
                     <MaterialIcons name="navigate-next" size={44} color="black" />
-                </TouchableOpacity>
+                </TouchableOpacity>}
 
             </ScrollView>
         </View>
@@ -275,13 +296,12 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 const styles = StyleSheet.create({
     touchableStyle: {
         borderWidth: 1,
-        padding: 15,
+        padding: 12,
         borderColor: '#439dbb',
         borderRadius: 8,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 5,
     },
     dateText: {
         marginRight: 40,
@@ -291,7 +311,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 15,
         marginTop: 10,
-        marginBottom: 5,
+        marginBottom: 5
     },
     timeDayView: {
         flexDirection: 'row',
@@ -302,15 +322,13 @@ const styles = StyleSheet.create({
         borderColor: '#439dbb',
         borderWidth: 1,
         backgroundColor: '#fff',
-        padding: 13,
-        marginTop: 5,
+        padding: 12,
     },
     inputBox: {
         borderRadius: 8,
         borderColor: '#439dbb',
         borderWidth: 1,
         backgroundColor: '#fff',
-        margin: 5,
         padding: 15,
     },
     nextButton: {
@@ -341,5 +359,19 @@ const styles = StyleSheet.create({
     activityIndicator: {
         flex: 1,
         justifyContent: 'center'
-    }
+    },
+    saveButton: {
+        borderWidth: 1,
+        borderColor: '#C0C0C0',
+        backgroundColor: '#439dbb',
+        borderRadius: 20,
+        alignItems: 'center',
+        padding: 10,
+        margin: 40,
+        marginHorizontal: 50,
+    },
+    saveButtonText: {
+        color: '#ffffff',
+        fontSize: 18
+    },
 })

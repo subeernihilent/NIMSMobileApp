@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, AsyncStorage, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ApproverDropdown from '../Components/ApproverDropdown';
 import WeekdayButton from '../Components/WeekdayButton';
+import useNavigateLock from "../Hooks/Lock";
 import { db } from "../Enviroment/FirebaseConfig";
 import { globalStyles } from '../styles/global';
 if (!global.btoa) {
@@ -14,6 +15,8 @@ if (!global.atob) {
 
 
 export default function Timesheet({ navigation }) {
+    const lock = useNavigateLock();
+
     const [loading, setLoading] = useState(true);
     const [location, setLocation] = useState('');
 
@@ -36,7 +39,7 @@ export default function Timesheet({ navigation }) {
 
     const navigateToNextScreen = () => {
         if (dateName != "" && approverName != "Select") {
-            navigation.push('TimesheetSecondScreen', {
+            lock() && navigation.push('TimesheetSecondScreen', {
                 location: location,
                 dateName: dateName,
                 approverName: approverName,
@@ -64,7 +67,7 @@ export default function Timesheet({ navigation }) {
             try {
                 userEmail = await AsyncStorage.getItem("userToken");
             } catch (error) {
-                consol.log(error);
+                console.log(error);
             }
         }, 2000);
     }, []);
@@ -76,7 +79,7 @@ export default function Timesheet({ navigation }) {
                 .where("email", "==", userEmail)
                 .get()
                 .then(function (querySnapshot) {
-                    console.log("user data",querySnapshot)
+                    console.log("user data", querySnapshot)
                     if (!querySnapshot.empty) {
                         querySnapshot.forEach(documentSnapshot => {
                             setLocation(documentSnapshot.data().location);

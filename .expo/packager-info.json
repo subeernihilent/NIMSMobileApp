@@ -1,10 +1,10 @@
 {
-  "devToolsPort": 19003,
-  "expoServerPort": 19004,
-  "packagerPort": 19005,
-  "packagerPid": 9104,
-  "expoServerNgrokUrl": "https://h4-5pz.anonymous.nimsmobileapp.exp.direct",
-  "packagerNgrokUrl": "https://packager.h4-5pz.anonymous.nimsmobileapp.exp.direct",
-  "ngrokPid": 7648,
+  "devToolsPort": 19002,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 7504,
+  "expoServerNgrokUrl": "https://db-h34.anonymous.nimsmobileapp.exp.direct",
+  "packagerNgrokUrl": "https://packager.db-h34.anonymous.nimsmobileapp.exp.direct",
+  "ngrokPid": 1988,
   "webpackServerPort": null
 }

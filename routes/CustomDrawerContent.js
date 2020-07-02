@@ -18,11 +18,26 @@ import { DrawerActions } from "@react-navigation/native";
 import Async from "../Utils/AsyncKey";
 import { AsyncStorage } from "react-native";
 import { db } from "../Enviroment/FirebaseConfig";
+if (!global.btoa) {
+    global.btoa = encode;
+}
+if (!global.atob) {
+    global.atob = decode;
+}
+
 
 export default function CustomDrawerContent(props) {
   const { logOut } = React.useContext(AuthContext);
   const [isLoading, setLoading] = useState(false);
   const [toggleRequest, setToggleRequest] = useState(false);
+    
+    const onLogoutClick = () => {
+        Alert.alert("Logout", "Are you sure you want to Logout?",
+                    [{ text: 'Yes', onPress: () => logOut() },
+                     { text: 'No', onPress: () => console.log("No pressed") }],
+                    { cancelable: false }
+                    )
+    }
 
   const errorAlert = (message) => {
     Alert.alert(
@@ -136,7 +151,7 @@ export default function CustomDrawerContent(props) {
             )}
             label="Logout"
             onPress={() => {
-              logOut();
+              onLogoutClick();
             }}
           />
         </View>
