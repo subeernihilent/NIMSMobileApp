@@ -7,7 +7,7 @@ import {
   TextInput,
   Alert,
   Modal,
-  Button
+  Button,
 } from "react-native";
 import { globalStyles } from "../styles/global";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -52,6 +52,8 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
     );
     const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
     let count = diffDays + 1;
+    console.log("days",count)
+
     setNumberOfDay(count);
   };
 
@@ -66,25 +68,25 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
 
   const poptoHomeScreen = () => {
     navigation.popToTop();
-  }
+  };
 
   useEffect(() => {
+    numberOfDays();
     return () => {
-      setModalopen(false)
-    }
-  },[])
-
+      setModalopen(false);
+    };
+  }, []);
 
   return (
     <View style={globalStyles.container}>
       <Modal visible={modalOpen} animationType="fade" transparent={true}>
         <View style={styles.modalOuterView}>
           <View style={styles.modalInnerView}>
-              <Text style={styles.alertText}> Leave applied successfuly </Text> 
-              <TouchableOpacity
-                style={styles.okayButton}
-                onPress = {poptoHomeScreen}
-               >
+            <Text style={styles.alertText}> Leave applied successfuly </Text>
+            <TouchableOpacity
+              style={styles.okayButton}
+              onPress={poptoHomeScreen}
+            >
               <Text style={styles.submitText}>Okay</Text>
             </TouchableOpacity>
           </View>
@@ -100,30 +102,42 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
         validationSchema={reviewSchema}
         onSubmit={(values, { resetForm }) => {
           numberOfDays();
+          let batch = db.batch();
+          var managerRef = db.collection("Managers").doc(manager);
+          var leaveRef = managerRef.collection("Leaves").doc(email);
           const usersRef = db.collection("LeaveApplied").doc(email);
           usersRef.get().then((docSnapshot) => {
             if (docSnapshot.exists) {
-              usersRef.onSnapshot((doc) => {
-                usersRef.update({
-                  leaves: firebase.firestore.FieldValue.arrayUnion({
-                    purpose: values.purpose,
-                    address: values.address,
-                    email: values.email,
-                    contact: values.contact,
-                    numOfDays: numberOfDay,
-                    approver: manager,
-                    leaveType: leave,
-                    toDate: toDate,
-                    fromDate: fromDate,
-                    leaveStatus: "pending",
-                    halfLeave: !halfLeave,
-                  }),
-                }).then(function() {
-                  setModalopen(true)   
-                });   
+              batch.update(usersRef, {
+                leaves: firebase.firestore.FieldValue.arrayUnion({
+                  purpose: values.purpose,
+                  address: values.address,
+                  email: values.email,
+                  contact: values.contact,
+                  numOfDays: numberOfDay,
+                  approver: manager,
+                  leaveType: leave,
+                  toDate: toDate,
+                  fromDate: fromDate,
+                  leaveApprovedByManager: false,
+                  leaveApprovedByHR: false,
+                  halfLeave: !halfLeave,
+                }),
               });
-            } else {
-              let batch = db.batch();
+              batch.set(leaveRef, {
+                leaveRef: db.doc("/LeaveApplied/" + email),
+              });
+
+              batch
+                .commit()
+                .then(function () {
+                  setModalopen(true);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  ShowErrorAlert();
+                });
+            } else {           
               let applyLeave = db.collection("LeaveApplied").doc(email);
               batch.set(applyLeave, {
                 leaveId: db.doc("/userLeaveStatus/" + email),
@@ -145,15 +159,30 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
                 ],
               });
 
+             
+              batch.set(leaveRef, {
+                leaveRef: db.doc("/LeaveApplied/" + email),
+              });
+
               batch
                 .commit()
                 .then(function () {
-                  console.log("Written to firestore");
-                  setModalopen(true)
+                  setModalopen(true);
                 })
                 .catch((err) => {
                   console.log(err);
                   ShowErrorAlert();
+                });
+
+              batch
+                .commit()
+                .then(function () {
+                  console.log("Written to firestore");
+                  setModalopen(true);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  errorAlert(err);
                 });
             }
           });
@@ -243,16 +272,16 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-   okayButton: {
+  okayButton: {
     marginVertical: 30,
     borderColor: "#fff",
     backgroundColor: "#439dbb",
     borderRadius: 40,
     justifyContent: "center",
     alignItems: "center",
-    width:100,
-    height:40,
-    alignSelf:'center'
+    width: 100,
+    height: 40,
+    alignSelf: "center",
   },
   submitText: {
     color: "#fff",
@@ -268,12 +297,12 @@ export const styles = StyleSheet.create({
     margin: 20,
     padding: 10,
   },
-  alertText:{
+  alertText: {
     fontStyle: "normal",
     fontWeight: "400",
     fontSize: 17,
     color: "black",
-    marginHorizontal:20,
-    alignSelf:'center'
+    marginHorizontal: 20,
+    alignSelf: "center",
   },
 });
