@@ -8,7 +8,7 @@ import useNavigateLock from '../Hooks/Lock'
 
 export default function ReviewRequestScreen({navigation} ) {
   const [menuList,setMenuList] = useState([{ id: 1, value: "Time Sheet"},
-    { id: 2, value: "Apply Leaves" }])
+    { id: 2, value: "Leaves" }])
     const lock = useNavigateLock()
 
     const goAppleave = () => lock() && navigation.push('memberLeaveList')

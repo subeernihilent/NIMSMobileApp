@@ -74,6 +74,7 @@ export default function FormComponent({ navigation }) {
         role: role,
         email: emailId,
         managers: ["Ajit Salvi","Ashok Thube"],
+        HR:"Viviana",
         location: "Pune",
       });
 

@@ -108,35 +108,53 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
           const usersRef = db.collection("LeaveApplied").doc(email);
           usersRef.get().then((docSnapshot) => {
             if (docSnapshot.exists) {
-              batch.update(usersRef, {
-                leaves: firebase.firestore.FieldValue.arrayUnion({
-                  purpose: values.purpose,
-                  address: values.address,
-                  email: values.email,
-                  contact: values.contact,
-                  numOfDays: numberOfDay,
-                  approver: manager,
-                  leaveType: leave,
-                  toDate: toDate,
-                  fromDate: fromDate,
-                  leaveApprovedByManager: false,
-                  leaveApprovedByHR: false,
-                  halfLeave: !halfLeave,
-                }),
-              });
-              batch.set(leaveRef, {
-                leaveRef: db.doc("/LeaveApplied/" + email),
-              });
-
-              batch
-                .commit()
-                .then(function () {
-                  setModalopen(true);
-                })
-                .catch((err) => {
-                  console.log(err);
-                  ShowErrorAlert();
+              let leaveList = docSnapshot.data()
+              let leaveVaules = leaveList["leaves"]
+              var result = false
+               result = leaveVaules.find(function (obj) {
+                if (obj.leaveApprovedByManager === false) {
+                  return true
+                }
+              });                     
+              if (result) {
+                Alert.alert(
+                  "Warning",
+                  "you have already applied for leave \n please confirm the previous request first \n contact your manager",
+                  [{ text: "OK", onPress: () => navigation.popToTop() }],
+                  { cancelable: false }
+                );
+                
+              }else{
+                batch.update(usersRef, {
+                  leaves: firebase.firestore.FieldValue.arrayUnion({
+                    purpose: values.purpose,
+                    address: values.address,
+                    email: values.email,
+                    contact: values.contact,
+                    numOfDays: numberOfDay,
+                    approver: manager,
+                    leaveType: leave,
+                    toDate: toDate,
+                    fromDate: fromDate,
+                    leaveApprovedByManager: false,
+                    leaveApprovedByHR: false,
+                    halfLeave: !halfLeave,
+                  }),
                 });
+                batch.set(leaveRef, {
+                  leaveRef: db.doc("/LeaveApplied/" + email),
+                });
+  
+                batch
+                  .commit()
+                  .then(function () {
+                    setModalopen(true);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    ShowErrorAlert();
+                  });
+              }
             } else {           
               let applyLeave = db.collection("LeaveApplied").doc(email);
               batch.set(applyLeave, {

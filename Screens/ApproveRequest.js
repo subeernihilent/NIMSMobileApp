@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { globalStyles } from "../styles/global";
 import Async from "../Utils/AsyncKey";
@@ -20,8 +21,10 @@ import { AntDesign } from "@expo/vector-icons";
 export default function ApproveRequest({ route, navigation }) {
   const { email } = route.params;
   const { manager } = route.params;
+  const { HR } = route.params;
   const [isLoading, setLoading] = useState(false);
   const [pendingLeave, setPendingLeave] = useState({});
+  const [index, setIndex] = useState(0);
 
   const errorAlert = (message) => {
     Alert.alert(
@@ -30,6 +33,97 @@ export default function ApproveRequest({ route, navigation }) {
       [{ text: "OK", onPress: () => console.log("OK Pressed") }],
       { cancelable: false }
     );
+  };
+
+  const approveLeave = async () => {
+    setLoading(true);
+    try {
+      var docRef = db.collection("LeaveApplied").doc(email);
+      var hrRef = db.collection("HR").doc(HR).collection("Leaves").doc(email);
+      var managerRef = db
+        .collection("Managers")
+        .doc(manager)
+        .collection("Leaves")
+        .doc(email);
+
+      docRef.get().then(function (doc) {
+        if (doc.exists) {
+          var objects = doc.data().leaves;
+          var result = objects.find(function (obj, index) {
+            if (obj.leaveApprovedByManager === false) {
+              setIndex(index);
+              return obj;
+            }
+          });
+          result.leaveApprovedByManager = true;
+          objects[index] = result;
+          docRef
+            .update({
+              leaves: objects,
+            })
+            .then(function () {
+              hrRef
+                .set({
+                  leaveRef: db.doc("/LeaveApplied/" + email),
+                })
+                .then(function () {
+                  console.log("data posted to HR");
+                  managerRef.delete().then(function () {
+                    setLoading(false);
+                    Alert.alert(
+                      "Alert",
+                      "Leave Approved",
+                      [{ text: "OK", onPress: () => navigation.popToTop()}],
+                      { cancelable: false }
+                    );
+                  });
+                });
+            });
+        }
+      });
+    } catch (e) {
+      setLoading(false);
+      errorAlert("not able to retrive email");
+    }
+  };
+
+
+  const rejectLeave = async () => {
+    setLoading(true);
+    try {
+      var docRef = db.collection("LeaveApplied").doc(email);
+      var managerRef = db
+        .collection("Managers")
+        .doc(manager)
+        .collection("Leaves")
+        .doc(email);
+      docRef.get().then(function (doc) {
+        if (doc.exists) {
+          var objects = doc.data().leaves;
+          let arr = objects.filter(function(item) {
+            return item.leaveApprovedByManager !== false
+          })
+          docRef
+          .update({
+            leaves: arr,
+          })
+          .then(function () {
+            managerRef.delete().then(function () {
+              setLoading(false);
+              Alert.alert(
+                "Alert",
+                "Leave rejected",
+                [{ text: "OK", onPress: () => navigation.popToTop()}],
+                { cancelable: false }
+              );
+            });
+          });
+        }
+      })
+    } catch (e) {
+      setLoading(false);
+      errorAlert("not able to retrive email");
+    }
   };
 
   const getLeaveDetail = async () => {
@@ -53,7 +147,7 @@ export default function ApproveRequest({ route, navigation }) {
                   let info = res.data();
                   var arrayOfLeaves = info["leaves"];
                   var result = arrayOfLeaves.find(function (obj) {
-                    return obj.leaveApprovedByHR === false;
+                    return obj.leaveApprovedByManager === false;
                   });
                   setPendingLeave(result);
                   setLoading(false);
@@ -92,10 +186,14 @@ export default function ApproveRequest({ route, navigation }) {
       <View style={globalStyles.container}>
         <LeaveDetails details={pendingLeave} />
         <View style={styles.maineView}>
-          <View style={styles.acceptView}>
-            <MaterialIcons name="done" size={70} color="black" />
-          </View>
-          <AntDesign name="closecircle" size={90} color="red" />
+          <TouchableOpacity onPress = {approveLeave}>
+            <View style={styles.acceptView}>
+              <MaterialIcons name="done" size={70} color="black" />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress = {rejectLeave}>
+            <AntDesign name="closecircle" size={90} color="red" />
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>

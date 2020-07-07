@@ -5,7 +5,7 @@ export default function LeaveDetails({details}) {
   return (
     <View>
       <View style={styles.cardView}>
-        <Text style={styles.text}>{details.leaveType}</Text>
+        <Text style={styles.text}>Leave type: {details.leaveType}</Text>
       </View>
       <View style={styles.cardView}>
         <Text style={styles.text}>Number of Days: {details.numOfDays}</Text>

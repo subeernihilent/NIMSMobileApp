@@ -20,11 +20,13 @@ export default function MemberLeaveList({navigation}) {
   const lock = useNavigateLock()
   const approveRequest = (email) => lock() && navigation.navigate('approveRequest', {
     email: email,
-    manager: manager
+    manager: manager,
+    HR:HR
   });
   const [isLoading, setLoading] = useState(false);
   const [list, setlist] = useState([]);
   const [manager,setManger] = useState("")
+  const [HR,setHR] = useState("")
 
   const errorAlert = (message) => {
     Alert.alert(
@@ -49,7 +51,9 @@ export default function MemberLeaveList({navigation}) {
               let firstName = userInfo["firstName"];
               let lastName = userInfo["lastName"];
               let managerName = firstName + " " + lastName;
+              let HR = userInfo["HR"]
               setManger(managerName)
+              setHR(HR)
               const snapshot = db
                 .collection("Managers")
                 .doc(managerName)
