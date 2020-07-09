@@ -13,20 +13,24 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Async from "../Utils/AsyncKey";
 import { AsyncStorage } from "react-native";
 import { db } from "../Enviroment/FirebaseConfig";
-import useNavigateLock from '../Hooks/Lock'
+import useNavigateLock from "../Hooks/Lock";
 
-
-export default function MemberLeaveList({navigation}) {
-  const lock = useNavigateLock()
-  const approveRequest = (email) => lock() && navigation.navigate('approveRequest', {
-    email: email,
-    manager: manager,
-    HR:HR
-  });
+export default function MemberLeaveList({ navigation }) {
+  const lock = useNavigateLock();
+  const approveRequest = (email) =>
+    lock() &&
+    navigation.navigate("approveRequest", {
+      email: email,
+      manager: manager,
+      HR: HR,
+      role:role
+    });
   const [isLoading, setLoading] = useState(false);
   const [list, setlist] = useState([]);
-  const [manager,setManger] = useState("")
-  const [HR,setHR] = useState("")
+  const [manager, setManger] = useState("");
+  const [HR, setHR] = useState("");
+  const [role, setRole] = useState("");
+
 
   const errorAlert = (message) => {
     Alert.alert(
@@ -50,34 +54,26 @@ export default function MemberLeaveList({navigation}) {
               let userInfo = doc.data();
               let firstName = userInfo["firstName"];
               let lastName = userInfo["lastName"];
-              let managerName = firstName + " " + lastName;
-              let HR = userInfo["HR"]
-              setManger(managerName)
-              setHR(HR)
-              const snapshot = db
-                .collection("Managers")
-                .doc(managerName)
-                .collection("Leaves");
-              snapshot.get().then((docSnapshot) => {
-                if (docSnapshot.empty) {
-                  setLoading(false);
-                  errorAlert("No Pending request!");
-                } else {
-                  docSnapshot.forEach((doc) => {
-                    var email = doc.id;
-                    var firstName = email.split(".")[0];
-                    var lastName = email.split(".")[1];
-                    var firstChar = firstName.slice(0, 1);
-                    var lastChar = lastName.slice(0, 1);
-                    var logo = firstChar + lastChar;
-                    setlist((oldArray) => [
-                      ...oldArray,
-                      { id: doc.id, logo: logo },
-                    ]);
-                  });
-                  setLoading(false);
-                }
-              });
+              let userName = firstName + " " + lastName;
+              let HR = userInfo["HR"];
+              let role = userInfo["role"];
+              setManger(userName);
+              setHR(HR);
+              setRole(role);
+              if (role == "HR") {
+                const snapshot = db
+                  .collection("HR")
+                  .doc(userName)
+                  .collection("Leaves");
+                  getListOfEmployee(snapshot)
+
+              } else {
+                const snapshot = db
+                  .collection("Managers")
+                  .doc(userName)
+                  .collection("Leaves");
+                  getListOfEmployee(snapshot)
+              }
             } else {
               setLoading(false);
               errorAlert("No such document!");
@@ -93,6 +89,30 @@ export default function MemberLeaveList({navigation}) {
       errorAlert("not able to retrive email");
     }
   };
+
+  const getListOfEmployee = (snapshot) => {
+    snapshot.get().then((docSnapshot) => {
+      if (docSnapshot.empty) {
+        setLoading(false);
+        errorAlert("No Pending request!");
+      } else {
+        docSnapshot.forEach((doc) => {
+          var email = doc.id;
+          var firstName = email.split(".")[0];
+          var lastName = email.split(".")[1];
+          var firstChar = firstName.slice(0, 1);
+          var lastChar = lastName.slice(0, 1);
+          var logo = firstChar + lastChar;
+          setlist((oldArray) => [
+            ...oldArray,
+            { id: doc.id, logo: logo },
+          ]);
+        });
+        setLoading(false);
+      }
+    });
+  }
+
 
   useEffect(() => {
     getEmail();
@@ -113,7 +133,7 @@ export default function MemberLeaveList({navigation}) {
         keyExtractor={(index) => "_" + Math.random().toString(36).substr(2, 9)}
         data={list}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress= {() => approveRequest(item.id)} >
+          <TouchableOpacity onPress={() => approveRequest(item.id)}>
             <View style={styles.listView}>
               <View style={styles.logo}>
                 <Text>{item.logo}</Text>
@@ -161,7 +181,7 @@ export const styles = StyleSheet.create({
     borderColor: "black",
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal:10,
+    marginHorizontal: 10,
     backgroundColor: "#94ffa5",
   },
   logoText: {

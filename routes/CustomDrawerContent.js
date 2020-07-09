@@ -44,7 +44,7 @@ export default function CustomDrawerContent(props) {
         .then(function (doc) {
           if (doc.exists) {
             let userInfo = doc.data().role;
-            if (userInfo == "NSS") {
+            if (userInfo == "NSS" || userInfo == "HR") {
                 setLoading(false);
                 setToggleRequest(true)
             }else {

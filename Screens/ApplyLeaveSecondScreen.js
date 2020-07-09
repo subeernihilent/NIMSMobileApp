@@ -52,7 +52,7 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
     );
     const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
     let count = diffDays + 1;
-    console.log("days",count)
+    console.log("days", count);
 
     setNumberOfDay(count);
   };
@@ -108,14 +108,17 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
           const usersRef = db.collection("LeaveApplied").doc(email);
           usersRef.get().then((docSnapshot) => {
             if (docSnapshot.exists) {
-              let leaveList = docSnapshot.data()
-              let leaveVaules = leaveList["leaves"]
-              var result = false
-               result = leaveVaules.find(function (obj) {
-                if (obj.leaveApprovedByManager === false) {
-                  return true
+              let leaveList = docSnapshot.data();
+              let leaveVaules = leaveList["leaves"];
+              var result = false;
+              result = leaveVaules.find(function (obj) {
+                if (
+                  obj.leaveApprovedByManager === false ||
+                  obj.leaveApprovedByHR === false
+                ) {
+                  return true;
                 }
-              });                     
+              });
               if (result) {
                 Alert.alert(
                   "Warning",
@@ -123,8 +126,7 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
                   [{ text: "OK", onPress: () => navigation.popToTop() }],
                   { cancelable: false }
                 );
-                
-              }else{
+              } else {
                 batch.update(usersRef, {
                   leaves: firebase.firestore.FieldValue.arrayUnion({
                     purpose: values.purpose,
@@ -144,7 +146,7 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
                 batch.set(leaveRef, {
                   leaveRef: db.doc("/LeaveApplied/" + email),
                 });
-  
+
                 batch
                   .commit()
                   .then(function () {
@@ -155,7 +157,7 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
                     ShowErrorAlert();
                   });
               }
-            } else {           
+            } else {
               let applyLeave = db.collection("LeaveApplied").doc(email);
               batch.set(applyLeave, {
                 leaveId: db.doc("/userLeaveStatus/" + email),
@@ -177,20 +179,9 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
                 ],
               });
 
-             
               batch.set(leaveRef, {
                 leaveRef: db.doc("/LeaveApplied/" + email),
               });
-
-              batch
-                .commit()
-                .then(function () {
-                  setModalopen(true);
-                })
-                .catch((err) => {
-                  console.log(err);
-                  ShowErrorAlert();
-                });
 
               batch
                 .commit()
