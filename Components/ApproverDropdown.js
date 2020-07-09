@@ -5,7 +5,7 @@ import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react
 export default function ApproverDropdown({ managerName, modalVisibility, onPress }) {
     return (
         <View>
-            <Modal visible={modalVisibility} animationType='slide' transparent={true}>
+            <Modal visible={modalVisibility} animationType='fade' transparent={true}>
                 <View style={styles.modalOuterView}>
                     <View style={styles.modalInnerView}>
                         <FlatList

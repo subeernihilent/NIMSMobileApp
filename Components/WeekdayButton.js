@@ -6,7 +6,7 @@ export default function WeekdayButton({ dateList, modalVisibility, onPress }) {
 
     return (
         <View>
-            <Modal visible={modalVisibility} animationType='slide' transparent={true}>
+            <Modal visible={modalVisibility} animationType='fade' transparent={true}>
                 <View style={styles.modalOuterView}>
                     <View style={styles.modalInnerView}>
                         <FlatList

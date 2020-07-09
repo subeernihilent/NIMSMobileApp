@@ -5,7 +5,7 @@ import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react
 export default function TaskDropdown({ taskList, modalClose, onPress }) {
     return (
         <View>
-            <Modal visible={modalClose} animationType='slide' transparent={true}>
+            <Modal visible={modalClose} animationType='fade' transparent={true}>
                 <View style={styles.modalOuterView}>
                     <View style={styles.modalInnerView}>
                         <FlatList

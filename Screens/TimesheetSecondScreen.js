@@ -1,6 +1,6 @@
 import { AntDesign, Entypo, MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, AsyncStorage, TouchableOpacity, View } from 'react-native';
 import ProjectDropdown from '../Components/ProjectDropdown';
 import SubtaskDropdown from '../Components/SubtaskDropdown';
 import TaskDropdown from '../Components/TaskDropdown';
@@ -29,7 +29,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
     const [remark, setRemark] = useState("");
 
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setLoading] = useState(true);
     const [projectList, setProjectList] = useState([]);
     const [projectModal, setProjectModal] = useState(false);
     const [projectName, setProjectName] = useState("Select");
@@ -47,6 +47,8 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
     const [showNextButton, setShowNextButton] = useState(false);
     const [showSaveButton, setShowSaveButton] = useState(true);
+
+    const [leaveApplied, setLeaveApply] = useState([]);
 
     const getData = (dayName, taskName, subtaskName, time, remark, location, approverName, dateName) => {
         setDetailList([
@@ -104,8 +106,8 @@ export default function TimesheetSecondScreen({ navigation, route }) {
         }
         else if (dayName != "Select day" && projectName != "Select" && taskName != "Select" && subtaskName != "Select" && time != '0' && remark != "") {
             if (count < 4) {
-                getData(dayName, taskName, subtaskName, time, remark);
-                showAlert("Timesheet added", dayName);
+                 getData(dayName, taskName, subtaskName, time, remark);
+                showAlert("Timesheet added" + dayName);
                 setCount(count + 1);
             }
             else {
@@ -121,7 +123,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
             setTime('0');
             setRemark("");
         }
-        else if (time != 8) {
+        else if (time !== 8) {
             showAlert("Set time is 8");
         }
         else {
@@ -138,6 +140,44 @@ export default function TimesheetSecondScreen({ navigation, route }) {
             projectName: projectName,
         });
     }
+
+    const getLeaveApplied = async () => {
+        try {
+            setLoading(true)
+            const email = await AsyncStorage.getItem("userToken")
+            if (email !== null) {
+                var docRef = db.collection("LeaveApplied").doc(email);
+                docRef.get().then(function (doc) {
+                    if (doc.exists) {
+                        setLoading(false)
+                        let userLeaveInfo = doc.data();
+                        let userLeaveArray = userLeaveInfo["leaves"]
+                        userLeaveArray.forEach((element) => {
+                            if (element.leaveApprovedByHR && element.leaveApprovedByManager) {
+                                setLeaveApply(oldArray => [...oldArray, element])
+                            }
+                        });
+                        console.log("leave ", leaveApplied);
+
+                    } else {
+                        setLoading(false)
+                        showAlert("No such document");
+                    }
+                }).catch(function (error) {
+                    setLoading(false)
+                    showAlert(error);
+                });
+            }
+        } catch (e) {
+            setLoading(false);
+            showAlert('not able to retrieve email');
+        }
+    }
+
+    useEffect(() => {
+        getLeaveApplied();
+    }, []);
+
 
     useEffect(() => {
         setTimeout(() => {
@@ -165,7 +205,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
             // Unsubscribe from events when no longer in use
             return () => subscriber();
-        }, 2000);
+        }, 1500);
     }, []);
 
     useEffect(() => {
@@ -183,6 +223,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
                             });
                         });
                         setTaskList(list);
+
                     }
                     else {
                         showAlert("No such document");
@@ -195,12 +236,12 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
             // Unsubscribe from events when no longer in use
             return () => subscriber();
-        }, 2000);
+        }, 1500);
     }, []);
 
 
 
-    if (loading) {
+    if (isLoading) {
         return <ActivityIndicator size='large' style={styles.activityIndicator} />
     }
 

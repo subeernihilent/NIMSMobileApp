@@ -23,6 +23,7 @@ export default function Timesheet({ navigation }) {
     const [dateList, setDateList] = useState([]);
     const [dateModal, setDateModal] = useState(false);
     const [dateName, setDateName] = useState("");
+    const [list, setList] = useState([]);
 
     const [managerName, setManagerList] = useState([]);
     const [approverModal, setApproverModal] = useState(false);
@@ -79,7 +80,7 @@ export default function Timesheet({ navigation }) {
                 .where("email", "==", userEmail)
                 .get()
                 .then(function (querySnapshot) {
-                    console.log("user data", querySnapshot)
+                    console.log("user  data", querySnapshot)
                     if (!querySnapshot.empty) {
                         querySnapshot.forEach(documentSnapshot => {
                             setLocation(documentSnapshot.data().location);
@@ -102,17 +103,22 @@ export default function Timesheet({ navigation }) {
 
     useEffect(() => {
         setTimeout(() => {
-            const subscriber = db
-                .collection('Week')
-                .where("email", "==", userEmail)
+            const subscriber = db.collection('Week').doc(userEmail)
                 .get()
-                .then(function (querySnapshot) {
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach(documentSnapshot => {
-                            setDateList(documentSnapshot.data().weekdays);
-                            console.log("date", '=>', documentSnapshot.data().weekdays);
+                .then(function (doc) {
+                    if (doc.exists) {
+                        
+                        setList(doc.data().weekdays);
+                        list.forEach((item) => {
+                            if (!item.status) {
+                                setDateList(dateList=>[item,...dateList]);
+                            }
                         });
-                    } else {
+                        setLoading(false);
+                        console.log("date list",dateList);
+                    }
+                    
+                    else {
                         showAlert("No such document");
                     }
                 })
