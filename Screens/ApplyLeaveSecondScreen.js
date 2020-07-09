@@ -57,6 +57,15 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
     setNumberOfDay(count);
   };
 
+  const conditionForApplyLeave = (count) => {
+    if (numberOfDay >= count) {
+      return  false
+    }else {
+      return true
+    }
+    return false
+  }
+
   const errorAlert = (message) => {
     Alert.alert(
       "Something went wrong",
@@ -101,100 +110,124 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
         }}
         validationSchema={reviewSchema}
         onSubmit={(values, { resetForm }) => {
+          let modalFlag = true
           numberOfDays();
           let batch = db.batch();
           var managerRef = db.collection("Managers").doc(manager);
           var leaveRef = managerRef.collection("Leaves").doc(email);
           const usersRef = db.collection("LeaveApplied").doc(email);
-          usersRef.get().then((docSnapshot) => {
-            if (docSnapshot.exists) {
-              let leaveList = docSnapshot.data();
-              let leaveVaules = leaveList["leaves"];
-              var result = false;
-              result = leaveVaules.find(function (obj) {
-                if (
-                  obj.leaveApprovedByManager === false ||
-                  obj.leaveApprovedByHR === false
-                ) {
-                  return true;
+          var leaveStatusRef = db.collection("userLeaveStatus").doc(email);
+          return db
+          .runTransaction(function (transaction) {
+            return Promise.all([
+              transaction.get(usersRef),
+              transaction.get(leaveStatusRef),
+            ]).then((docs) => {
+              let doc1 = docs[0];
+              let doc2 = docs[1];
+              
+              var status = doc2.data().Leaves;
+              var availabeBalance = status[0].values;
+              var flagForApplyLeave = false
+
+              if (leave == "Casual") {
+               let count = availabeBalance.casual;
+               flagForApplyLeave = conditionForApplyLeave(count)
+              } else if (leave == "Sick") {
+                let count = availabeBalance.sick;
+                flagForApplyLeave = conditionForApplyLeave(count)
+              } else if (leave == "Privilege") {
+                let count = availabeBalance.privilege;
+                flagForApplyLeave = conditionForApplyLeave(count)
+              }
+              if (flagForApplyLeave) {
+                if (doc1.exists) {
+                  let leaveList = doc1.data().leaves;
+                  var result = false;
+                  result = leaveList.find(function (obj) {
+                    if (
+                      obj.leaveApprovedByManager === false ||
+                      obj.leaveApprovedByHR === false
+                    ) {
+                      return true;
+                    }
+                  });
+                  if (result) {
+                    modalFlag = false
+                    Alert.alert(
+                      "Warning",
+                      "you have already applied for leave \n please confirm the previous request first \n contact your manager",
+                      [{ text: "OK", onPress: () => navigation.popToTop() }],
+                      { cancelable: false }
+                    );
+                  } else {
+                    transaction.update(usersRef, {
+                      leaves: firebase.firestore.FieldValue.arrayUnion({
+                        purpose: values.purpose,
+                        address: values.address,
+                        email: values.email,
+                        contact: values.contact,
+                        numOfDays: numberOfDay,
+                        approver: manager,
+                        leaveType: leave,
+                        toDate: toDate,
+                        fromDate: fromDate,
+                        leaveApprovedByManager: false,
+                        leaveApprovedByHR: false,
+                        halfLeave: !halfLeave,
+                      }),
+                    });
+                    transaction.set(leaveRef, {
+                      leaveRef: db.doc("/LeaveApplied/" + email),
+                    });
                 }
-              });
-              if (result) {
+              }
+               else{
+                  transaction.set(usersRef, {
+                    leaveId: db.doc("/userLeaveStatus/" + email),
+                    userId: db.doc("/users/" + email),
+                    leaves: [
+                      {
+                        purpose: values.purpose,
+                        address: values.address,
+                        email: values.email,
+                        contact: values.contact,
+                        numOfDays: numberOfDay,
+                        approver: manager,
+                        leaveType: leave,
+                        toDate: toDate,
+                        fromDate: fromDate,
+                        leaveStatus: "pending",
+                        halfLeave: !halfLeave,
+                      },
+                    ],
+                  });
+                  
+                  transaction.set(leaveRef, {
+                    leaveRef: db.doc("/LeaveApplied/" + email),
+                  });
+               }
+              }else {
+                console.log("modal flag")
+                modalFlag = false
                 Alert.alert(
                   "Warning",
-                  "you have already applied for leave \n please confirm the previous request first \n contact your manager",
+                  "you have exceeded the leaves please contact the HR",
                   [{ text: "OK", onPress: () => navigation.popToTop() }],
                   { cancelable: false }
                 );
-              } else {
-                batch.update(usersRef, {
-                  leaves: firebase.firestore.FieldValue.arrayUnion({
-                    purpose: values.purpose,
-                    address: values.address,
-                    email: values.email,
-                    contact: values.contact,
-                    numOfDays: numberOfDay,
-                    approver: manager,
-                    leaveType: leave,
-                    toDate: toDate,
-                    fromDate: fromDate,
-                    leaveApprovedByManager: false,
-                    leaveApprovedByHR: false,
-                    halfLeave: !halfLeave,
-                  }),
-                });
-                batch.set(leaveRef, {
-                  leaveRef: db.doc("/LeaveApplied/" + email),
-                });
-
-                batch
-                  .commit()
-                  .then(function () {
-                    setModalopen(true);
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    ShowErrorAlert();
-                  });
               }
-            } else {
-              let applyLeave = db.collection("LeaveApplied").doc(email);
-              batch.set(applyLeave, {
-                leaveId: db.doc("/userLeaveStatus/" + email),
-                userId: db.doc("/users/" + email),
-                leaves: [
-                  {
-                    purpose: values.purpose,
-                    address: values.address,
-                    email: values.email,
-                    contact: values.contact,
-                    numOfDays: numberOfDay,
-                    approver: manager,
-                    leaveType: leave,
-                    toDate: toDate,
-                    fromDate: fromDate,
-                    leaveStatus: "pending",
-                    halfLeave: !halfLeave,
-                  },
-                ],
-              });
-
-              batch.set(leaveRef, {
-                leaveRef: db.doc("/LeaveApplied/" + email),
-              });
-
-              batch
-                .commit()
-                .then(function () {
-                  console.log("Written to firestore");
-                  setModalopen(true);
-                })
-                .catch((err) => {
-                  console.log(err);
-                  errorAlert(err);
-                });
+            })   
+          }).then(function () {
+            if (modalFlag) {
+              console.log("Written to firestore");
+              setModalopen(true);
             }
-          });
+          })
+          .catch(function (err) {
+            console.log(err);
+            errorAlert(err);
+          });      
         }}
       >
         {(props) => (
