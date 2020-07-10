@@ -5,7 +5,6 @@ import { StyleSheet, Text, TouchableHighlight, View, Alert, ActivityIndicator ,A
 import { AuthContext } from "../Context/AuthContext";
 import { DrawerActions } from "@react-navigation/native";
 import Async from "../Utils/AsyncKey";
-import { AsyncStorage } from "react-native";
 import { db } from "../Enviroment/FirebaseConfig";
 if (!global.btoa) {
     global.btoa = encode;
@@ -163,8 +162,6 @@ export default function CustomDrawerContent(props) {
                 </View>
             </DrawerContentScrollView>
         </View>
-      </DrawerContentScrollView>
-    </View>
   );
 }
 

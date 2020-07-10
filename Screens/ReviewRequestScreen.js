@@ -12,11 +12,11 @@ export default function ReviewRequestScreen({navigation} ) {
     const lock = useNavigateLock()
 
     const goAppleave = () => lock() && navigation.push('memberLeaveList')
-  //  const goTimeSheet = () => lock() && navigation.push('Timesheet')
+    const goTimeSheet = () => lock() && navigation.push('ReviewTimesheet')
 
     const pressHanlder=(id)=>{
       if(id==1){
-          //goTimeSheet()
+        goTimeSheet()
       }
       else{
         goAppleave()

@@ -10,7 +10,7 @@ export default function WeekdayButton({ dateList, modalVisibility, onPress }) {
                 <View style={styles.modalOuterView}>
                     <View style={styles.modalInnerView}>
                         <FlatList
-                            keyExtractor={(item, index) => index.toString()}
+                            keyExtractor={(index) => "_" + Math.random().toString(36).substr(2, 9)}
                             data={dateList}
                             renderItem={({ item }) => (
                                 <TouchableOpacity onPress={() => onPress(item.week)}>
