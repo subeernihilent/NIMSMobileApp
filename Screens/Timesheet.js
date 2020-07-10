@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, AsyncStorage, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ApproverDropdown from '../Components/ApproverDropdown';
 import WeekdayButton from '../Components/WeekdayButton';
-import useNavigateLock from "../Hooks/Lock";
 import { db } from "../Enviroment/FirebaseConfig";
+import useNavigateLock from "../Hooks/Lock";
 import { globalStyles } from '../styles/global';
 if (!global.btoa) {
     global.btoa = encode;
@@ -23,12 +23,10 @@ export default function Timesheet({ navigation }) {
     const [dateList, setDateList] = useState([]);
     const [dateModal, setDateModal] = useState(false);
     const [dateName, setDateName] = useState("");
-    const [list, setList] = useState([]);
 
     const [managerName, setManagerList] = useState([]);
     const [approverModal, setApproverModal] = useState(false);
     const [approverName, setApproverName] = useState("Select");
-    let userEmail;
 
     const showAlert = (msg) => {
         Alert.alert(
@@ -48,7 +46,7 @@ export default function Timesheet({ navigation }) {
             setDateName("");
         }
         else {
-            showAlert("Please select date and approvername");
+            showAlert("Please select date and approver name");
         }
     }
 
@@ -62,74 +60,47 @@ export default function Timesheet({ navigation }) {
         setApproverModal(false);
     }
 
-    useEffect(() => {
-        setTimeout(async () => {
-            userEmail = null;
-            try {
-                userEmail = await AsyncStorage.getItem("userToken");
-            } catch (error) {
-                console.log(error);
-            }
-        }, 2000);
-    }, []);
+    const getDetails = async () => {
+        try {
+            const email = await AsyncStorage.getItem("userToken");
+            if (email !== null) {
+                var userRef = db.collection("users").doc(email);
+                var weekDaysRef = db.collection('Week').doc(email);
 
-    useEffect(() => {
-        setTimeout(() => {
-            const subscriber = db
-                .collection('users')
-                .where("email", "==", userEmail)
-                .get()
-                .then(function (querySnapshot) {
-                    console.log("user  data", querySnapshot)
-                    if (!querySnapshot.empty) {
-                        querySnapshot.forEach(documentSnapshot => {
-                            setLocation(documentSnapshot.data().location);
-                            setManagerList(documentSnapshot.data().managers);
-                        });
-                    }
-                    else {
-                        showAlert("No such document");
-                    }
-                })
-                .catch(function (error) {
-                    showAlert(error);
-                });
-            setLoading(false);
-
-            // Unsubscribe from events when no longer in use
-            return () => subscriber();
-        }, 2000);
-    }, []);
-
-    useEffect(() => {
-        setTimeout(() => {
-            const subscriber = db.collection('Week').doc(userEmail)
-                .get()
-                .then(function (doc) {
-                    if (doc.exists) {
-                        
-                        setList(doc.data().weekdays);
-                        list.forEach((item) => {
+                db.runTransaction((transaction) => {
+                    return Promise.all([
+                        transaction.get(userRef),
+                        transaction.get(weekDaysRef),
+                    ]).then((docs) => {
+                        let userDoc = docs[0];
+                        let weekDoc = docs[1];
+                        setLocation(userDoc.data().location);
+                        setManagerList(userDoc.data().managers);
+                        let lists = weekDoc.data().weekdays;
+                        lists.forEach((item) => {
                             if (!item.status) {
-                                setDateList(dateList=>[item,...dateList]);
+                                setDateList(dateList => [item, ...dateList]);
                             }
                         });
-                        setLoading(false);
-                        console.log("date list",dateList);
-                    }
-                    
-                    else {
-                        showAlert("No such document");
-                    }
+                    })
                 })
-                .catch(function (error) {
-                    showAlert(error);
-                });
-            setLoading(false);
+                    .then(function () {
+                        setLoading(false);
+                    })
 
-            // Unsubscribe from events when no longer in use
-            return () => subscriber();
-        }, 2000);
+            }
+            else {
+                setLoading(false);
+                showAlert("did not get email");
+            }
+        } catch (error) {
+            setLoading(false);
+            showAlert(error);
+        }
+    }
+
+    useEffect(() => {
+        getDetails();
     }, []);
 
 

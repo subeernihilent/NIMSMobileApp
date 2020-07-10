@@ -16,7 +16,7 @@ export default function TimesheetDetailScreen({ navigation, route }) {
     const [detailList, setDetailList] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [index, setIndex] = useState(0);
-    let email;
+
     const [monTask, setMonTask] = useState('');
     const [monTime, setMonTime] = useState('');
     const [monSubtask, setMonSubtask] = useState('');
@@ -77,22 +77,10 @@ export default function TimesheetDetailScreen({ navigation, route }) {
         })
     }
 
-    useEffect(() => {
-        setTimeout(async () => {
-            try {
-                email = await AsyncStorage.getItem("userToken");
-                console.log("userEmail", email);
-            } catch (error) {
-                console.log(error);
-            }
-        }, 1000);
-        setLoading(false);
-    }, []);
-
-    useEffect(() => {
+     useEffect(() => {
         setDetailList(route.params.detailList);
+         getData(detailList);
         setLoading(false);
-        getData(detailList);
     }, [])
 
     const showAlert = (msg) => {
@@ -103,9 +91,10 @@ export default function TimesheetDetailScreen({ navigation, route }) {
         );
     }
 
-    const onSubmitClick = () => {
+    const onSubmitClick = async () => {
         try {
             setLoading(true);
+            const email = await AsyncStorage.getItem("userToken");
             console.log("Email ", email);
             if (email !== null) {
                 let batch = db.batch();

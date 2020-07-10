@@ -106,7 +106,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
         }
         else if (dayName != "Select day" && projectName != "Select" && taskName != "Select" && subtaskName != "Select" && time != '0' && remark != "") {
             if (count < 4) {
-                 getData(dayName, taskName, subtaskName, time, remark);
+                getData(dayName, taskName, subtaskName, time, remark);
                 showAlert("Timesheet added" + dayName);
                 setCount(count + 1);
             }
@@ -176,68 +176,66 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
     useEffect(() => {
         getLeaveApplied();
+        ProjectList();
+        getTaskList();
     }, []);
 
 
-    useEffect(() => {
-        setTimeout(() => {
-            const subscriber = db
-                .collection('Projects')
-                .get()
-                .then(function (querySnapshot) {
-                    if (!querySnapshot.empty) {
-                        const list = [];
-                        querySnapshot.forEach(documentSnapshot => {
-                            list.push({
-                                key: documentSnapshot.id
-                            })
+    const ProjectList = async () => {
+        const subscriber = db
+            .collection('Projects')
+            .get()
+            .then(function (querySnapshot) {
+                if (!querySnapshot.empty) {
+                    const list = [];
+                    querySnapshot.forEach(documentSnapshot => {
+                        list.push({
+                            key: documentSnapshot.id
+                        })
+                    });
+                    setProjectList(list)
+                }
+                else {
+                    showAlert("No such document");
+                }
+            })
+            .catch(function (error) {
+                showAlert(error);
+            });
+        setLoading(false);
+
+        // Unsubscribe from events when no longer in use
+        return () => subscriber();
+    }
+
+    const getTaskList = async () => {
+        const subscriber = db
+            .collection('Task')
+            .get()
+            .then(function (querySnapshot) {
+                if (!querySnapshot.empty) {
+                    const list = [];
+                    querySnapshot.forEach(documentSnapshot => {
+                        list.push({
+                            ...documentSnapshot.data(),
+                            key: documentSnapshot.id,
                         });
-                        setProjectList(list)
-                    }
-                    else {
-                        showAlert("No such document");
-                    }
-                })
-                .catch(function (error) {
-                    showAlert(error);
-                });
-            setLoading(false);
+                    });
+                    setTaskList(list);
 
-            // Unsubscribe from events when no longer in use
-            return () => subscriber();
-        }, 1500);
-    }, []);
+                }
+                else {
+                    showAlert("No such document");
+                }
+            })
+            .catch(function (error) {
+                showAlert(error);
+            });
+        setLoading(false);
 
-    useEffect(() => {
-        setTimeout(() => {
-            const subscriber = db
-                .collection('Task')
-                .get()
-                .then(function (querySnapshot) {
-                    if (!querySnapshot.empty) {
-                        const list = [];
-                        querySnapshot.forEach(documentSnapshot => {
-                            list.push({
-                                ...documentSnapshot.data(),
-                                key: documentSnapshot.id,
-                            });
-                        });
-                        setTaskList(list);
-
-                    }
-                    else {
-                        showAlert("No such document");
-                    }
-                })
-                .catch(function (error) {
-                    showAlert(error);
-                });
-            setLoading(false);
-
-            // Unsubscribe from events when no longer in use
-            return () => subscriber();
-        }, 1500);
-    }, []);
+        // Unsubscribe from events when no longer in use
+        return () => subscriber();
+    }
 
 
 
