@@ -107,7 +107,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
         else if (dayName != "Select day" && projectName != "Select" && taskName != "Select" && subtaskName != "Select" && time != '0' && remark != "") {
             if (count < 4) {
                 getData(dayName, taskName, subtaskName, time, remark);
-                showAlert("Timesheet added" + dayName);
+                showAlert("Timesheet added for" +" "+ dayName);
                 setCount(count + 1);
             }
             else {

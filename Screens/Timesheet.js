@@ -23,6 +23,7 @@ export default function Timesheet({ navigation }) {
     const [dateList, setDateList] = useState([]);
     const [dateModal, setDateModal] = useState(false);
     const [dateName, setDateName] = useState("");
+    const [flag, setFlag] = useState(false);
 
     const [managerName, setManagerList] = useState([]);
     const [approverModal, setApproverModal] = useState(false);
@@ -80,8 +81,9 @@ export default function Timesheet({ navigation }) {
                         lists.forEach((item) => {
                             if (!item.status) {
                                 setDateList(dateList => [item, ...dateList]);
+                                setFlag(true);
                             }
-                        });
+                          });
                     })
                 })
                     .then(function () {
@@ -103,6 +105,15 @@ export default function Timesheet({ navigation }) {
         getDetails();
     }, []);
 
+    const onCalendarClick = () => {
+        if (!flag) {
+            showAlert("No timesheet pending for submitted");
+            setDateModal(false);
+        }
+        else {
+            setDateModal(true);
+        }
+    }
 
     if (loading) {
         return <ActivityIndicator size='large' style={styles.activityIndicator} />
@@ -117,7 +128,7 @@ export default function Timesheet({ navigation }) {
             </View>
 
             <View style={styles.dayView}>
-                <TouchableOpacity onPress={() => setDateModal(true)}>
+                <TouchableOpacity onPress={onCalendarClick}>
                     <AntDesign name="calendar" size={54} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.dayText}>{dateName}</Text>

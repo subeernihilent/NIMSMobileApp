@@ -77,10 +77,10 @@ export default function TimesheetDetailScreen({ navigation, route }) {
         })
     }
 
-     useEffect(() => {
+    useEffect(() => {
         setDetailList(route.params.detailList);
-         getData(detailList);
         setLoading(false);
+        getData(detailList);
     }, [])
 
     const showAlert = (msg) => {
@@ -92,183 +92,148 @@ export default function TimesheetDetailScreen({ navigation, route }) {
     }
 
     const onSubmitClick = async () => {
+        getData(detailList);
+        console.log("test", tueRemark);
         try {
             setLoading(true);
             const email = await AsyncStorage.getItem("userToken");
-            console.log("Email ", email);
             if (email !== null) {
-                let batch = db.batch();
-                let timsheetRef = db.collection("Timesheet").doc(email);
-                timsheetRef.get().then((docSnapshot) => {
-                    if (docSnapshot.exists) {
-                        batch.update(timsheetRef, {
-                            timeSheet: firebase.firestore.FieldValue.arrayUnion({
-                                approverName: route.params.approverName,
-                                projectName: route.params.projectName,
-                                weekdate: route.params.dateName,
-                                mon: {
-                                    task: monTask,
-                                    subtask: monSubtask,
-                                    remark: monRemark,
-                                    time: monTime,
-                                },
-                                tue: {
-                                    task: tueTask,
-                                    subtask: tueSubtask,
-                                    remark: tueRemark,
-                                    time: tueTime,
-                                },
-                                wed: {
-                                    task: wedTask,
-                                    subtask: wedSubtask,
-                                    remark: wedRemark,
-                                    time: wedTime,
-                                },
-                                thu: {
-                                    task: thuTask,
-                                    subtask: thuSubtask,
-                                    remark: thuRemark,
-                                    time: thuTime,
-                                },
-                                fri: {
-                                    task: friTask,
-                                    subtask: friSubtask,
-                                    remark: friRemark,
-                                    time: friTime,
-                                },
-                                managerApproval: false,
-                            }),
-                        });
+                var timesheetRef = db.collection("Timesheet").doc(email);
+                var weekListRef = db.collection("Week").doc(email);
+                var managerRef = db.collection("Managers").doc(route.params.approverName)
+                    .collection("Timesheet")
+                    .doc(email);
 
-                        let weekDate = db.collection("Week").doc(email)
-                            .get()
-                            .then(function (doc) {
-                                var weekList = doc.data().weekdays;
-                                var result = weekList.find(function (obj, index) {
-                                    if (obj.week === route.params.dateName) {
-                                        setIndex(index);
-                                        return obj;
-                                    }
-                                });
-                                console.log("weekindex", index);
-                                result.status = true;
-                                weekList[index] = result;
-                                batch.update(weekDate, {
-                                    weekdays: weekList
-                                })
-                                console.log("weekly ", weekList);
+                db.runTransaction((transaction) => {
+                    return Promise.all([
+                        transaction.get(timesheetRef),
+                        transaction.get(weekListRef),
+                    ]).then((docs) => {
+                        let docTimesheet = docs[0];
+                        let docWeekList = docs[1];
+
+                        let weekList = docWeekList.data().weekdays;
+                        var weekIndex = 0;
+                        var result = weekList.find(function (obj, index) {
+                            if (obj.week === route.params.dateName) {
+                                weekIndex = index;
+                                return obj;
+                            }
+                        });
+                        result.status = true;
+                        weekList[weekIndex] = result;
+
+                        if (docTimesheet.exists) {
+                            transaction.update(timesheetRef, {
+                                timeSheet: firebase.firestore.FieldValue.arrayUnion({
+                                    approverName: route.params.approverName,
+                                    projectName: route.params.projectName,
+                                    weekdate: route.params.dateName,
+                                    mon: {
+                                        task: monTask,
+                                        subtask: monSubtask,
+                                        remark: monRemark,
+                                        time: monTime,
+                                    },
+                                    tue: {
+                                        task: tueTask,
+                                        subtask: tueSubtask,
+                                        remark: tueRemark,
+                                        time: tueTime,
+                                    },
+                                    wed: {
+                                        task: wedTask,
+                                        subtask: wedSubtask,
+                                        remark: wedRemark,
+                                        time: wedTime,
+                                    },
+                                    thu: {
+                                        task: thuTask,
+                                        subtask: thuSubtask,
+                                        remark: thuRemark,
+                                        time: thuTime,
+                                    },
+                                    fri: {
+                                        task: friTask,
+                                        subtask: friSubtask,
+                                        remark: friRemark,
+                                        time: friTime,
+                                    },
+                                    managerApproval: false,
+                                }),
                             });
 
-                        let timesheetApply = db.collection("Managers").doc(route.params.approverName)
-                            .collection("Timesheet")
-                            .doc(email);
-                        batch.set(timesheetApply, {
-                            timesheetRef: db.doc("/Timesheet/" + email),
-                        });
-
-                        batch.commit()
-                            .then(function () {
-                                console.log("Written to firestore");
-                                setLoading(false);
-                                showAlert("Timesheet submitted");
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                                setLoading(false);
-                                showAlert(err)
-                            });
-                    }
-
-                    else {
-                        let timesheet = db.collection("Timesheet").doc(email);
-                        batch.set(timesheet, {
-                            userId: db.doc("/users/" + email),
-                            timeSheet: [{
-                                approverName: route.params.approverName,
-                                projectName: route.params.projectName,
-                                weekdate: route.params.dateName,
-                                mon: {
-                                    task: monTask,
-                                    subtask: monSubtask,
-                                    remark: monRemark,
-                                    time: monTime,
-                                },
-                                tue: {
-                                    task: tueTask,
-                                    subtask: tueSubtask,
-                                    remark: tueRemark,
-                                    time: tueTime,
-                                },
-                                wed: {
-                                    task: wedTask,
-                                    subtask: wedSubtask,
-                                    remark: wedRemark,
-                                    time: wedTime,
-                                },
-                                thu: {
-                                    task: thuTask,
-                                    subtask: thuSubtask,
-                                    remark: thuRemark,
-                                    time: thuTime,
-                                },
-                                fri: {
-                                    task: friTask,
-                                    subtask: friSubtask,
-                                    remark: friRemark,
-                                    time: friTime,
-                                },
-                                managerApproval: false,
-                            }]
-                        });
-
-                        let weekDate = db.collection("Week").doc(email)
-                            .get()
-                            .then(function (doc) {
-                                var weekList = doc.data().weekdays;
-                                var result = weekList.find(function (obj, index) {
-                                    if (obj.week === route.params.dateName) {
-                                        setIndex(index);
-                                        return obj;
-                                    }
-                                });
-                                result.status = true;
-                                weekList[index] = result;
-                                batch.update(weekDate, {
-                                    weekdays: weekList,
-
-                                })
-                                console.log("weekly ", weekList);
+                            transaction.set(managerRef, {
+                                timesheetRef: db.doc("/Timesheet/" + email),
                             });
 
-                        let timesheetApply = db.collection("Managers").doc(route.params.approverName)
-                            .collection("Timesheet")
-                            .doc(email);
-                        batch.set(timesheetApply, {
-                            timesheetRef: db.doc("/Timesheet/" + email),
-                        });
-
-                        batch.commit()
-                            .then(function () {
-                                console.log("Written to firestore");
-                                setLoading(false);
-                                showAlert("Timesheet submitted");
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                                setLoading(false);
-                                showAlert(err)
+                            transaction.update(weekListRef, {
+                                weekdays: weekList,
                             });
-                    }
-                });
+                        }
+                        else {
+                            transaction.set(timesheetRef, {
+                                userId: db.doc("/users/" + email),
+                                timeSheet: [{
+                                    approverName: route.params.approverName,
+                                    projectName: route.params.projectName,
+                                    weekdate: route.params.dateName,
+                                    mon: {
+                                        task: monTask,
+                                        subtask: monSubtask,
+                                        remark: monRemark,
+                                        time: monTime,
+                                    },
+                                    tue: {
+                                        task: tueTask,
+                                        subtask: tueSubtask,
+                                        remark: tueRemark,
+                                        time: tueTime,
+                                    },
+                                    wed: {
+                                        task: wedTask,
+                                        subtask: wedSubtask,
+                                        remark: wedRemark,
+                                        time: wedTime,
+                                    },
+                                    thu: {
+                                        task: thuTask,
+                                        subtask: thuSubtask,
+                                        remark: thuRemark,
+                                        time: thuTime,
+                                    },
+                                    fri: {
+                                        task: friTask,
+                                        subtask: friSubtask,
+                                        remark: friRemark,
+                                        time: friTime,
+                                    },
+                                    managerApproval: false,
+                                }]
+                            });
+
+                            transaction.set(managerRef, {
+                                timesheetRef: db.doc("/Timesheet/" + email),
+                            });
+
+                            transaction.update(weekListRef, {
+                                weekdays: weekList,
+                            });
+                        }
+                    })
+                })
+                    .then(function () {
+                        setLoading(false);
+                        showAlert("Timesheet submitted successfully");
+                    })
             }
-        }
-        catch (error) {
+
+        } catch (error) {
             setLoading(false);
-            alert("email did not retrieve");
+            showAlert(error);
+
         }
-
     }
-
 
     if (isLoading) {
         return <ActivityIndicator size='large' style={styles.activityIndicator} />
