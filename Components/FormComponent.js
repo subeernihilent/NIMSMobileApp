@@ -74,6 +74,7 @@ export default function FormComponent({ navigation }) {
         role: role,
         email: emailId,
         managers: ["Ajit Salvi","Ashok Thube"],
+        HR:"Shivani Singh",
         location: "Pune",
       });
 
@@ -82,19 +83,19 @@ export default function FormComponent({ navigation }) {
         Leaves:[
           {
             title: "Available Balance :",
-            values: { casual: 6, sick: 6, privilege: 6 },
+            values: { casual: 10, sick: 10, privilege: 30 },
           },
           {
             title: "Carry Forward Leave :",
-            values: { casual: 6, sick: 6, privilege: 6 },
+            values: { casual: 0, sick: 0, privilege: 0 },
           },
           {
             title: "Current Year Leave :",
-            values: { casual: 6, sick: 6, privilege: 6 },
+            values: { casual: 10, sick: 10, privilege: 30 },
           },
-          { title: "Leave Applied :", values: { casual: 6, sick: 6, privilege: 6 } },
-          { title: "Leave Taken :", values: { casual: 6, sick: 6, privilege: 6 } },
-          { title: "Total :", values: { casual: 6, sick: 6, privilege: 6 } },
+          { title: "Leave Applied :", values: { casual: 0, sick: 0, privilege: 0 } },
+          { title: "Leave Taken :", values: { casual: 0, sick: 0, privilege: 0 } },
+          { title: "Total :", values: { casual: 10, sick: 10, privilege: 30 } },
         ],
        useRef: db.doc("users/" + emailId)
       });

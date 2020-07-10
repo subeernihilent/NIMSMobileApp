@@ -1,10 +1,11 @@
-import React from 'react'
-import { createStackNavigator } from '@react-navigation/stack'
+import React from "react";
+import { createStackNavigator } from "@react-navigation/stack";
 import ReviewRequestScreen from "../Screens/ReviewRequestScreen";
-import Header from '../Components/Header';
+import LeaveList from "../Screens/MemberLeaveList";
+import Header from "../Components/Header";
+import ApproveRequest from "../Screens/ApproveRequest";
 
-
-const Stack = createStackNavigator()
+const Stack = createStackNavigator();
 
 export default function ReviewStack() {
   return (
@@ -26,8 +27,26 @@ export default function ReviewStack() {
         component={ReviewRequestScreen}
         options={({ navigation }) => {
           return {
-            headerTitle: () => <Header navigation={navigation} title={'Review Request'}/>,
+            headerTitle: () => (
+              <Header navigation={navigation} title={"Review Request"} />
+            ),
           };
+        }}
+      />
+
+      <Stack.Screen
+        name="memberLeaveList"
+        component={LeaveList}
+        options={{
+          title: "Pending List",
+        }}
+      />
+
+      <Stack.Screen
+        name="approveRequest"
+        component={ApproveRequest}
+        options={{
+          title: "ApproveRequest",
         }}
       />
     </Stack.Navigator>
