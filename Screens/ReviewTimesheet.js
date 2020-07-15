@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, StyleSheet, Text, TouchableOpacity, View, AsyncStorage } from 'react-native';
 import { db } from "../Enviroment/FirebaseConfig";
 import useNavigateLock from "../Hooks/Lock";
 if (!global.btoa) {
@@ -15,6 +15,7 @@ export default function ReviewTimesheet({ navigation }) {
     const lock = useNavigateLock();
     const [employeeList, setEmployeeList] = useState([]);
     const [isLoading, setLoading] = useState(true);
+    const [manager, setManager] = useState('');
 
     const showAlert = (msg) => {
         Alert.alert(
@@ -24,50 +25,73 @@ export default function ReviewTimesheet({ navigation }) {
         );
     }
 
-    const navigateToDetail = (email,userName) => {
+    const navigateToDetail = (email, userName) => {
         lock() && navigation.push('ReviewUserTimesheet', {
             email: email,
             userName: userName,
+            manager: manager,
         });
     }
     useEffect(() => {
-        setTimeout(() => {
-            getTimesheetList();
-        }, 2000);
-
+        getTimesheetList();
     }, [])
 
-    const getTimesheetList = () => {
-        const subscriber = db.collection('Managers').doc('Ashok Thube').collection('Timesheet')
-            .get()
-            .then(function (querySnapshot) {
-                if (!querySnapshot.empty) {
-                    const list = [];
-                    querySnapshot.forEach(function (doc) {
-                        var firstName = doc.id.split(".")[0];
-                        var lastName = (doc.id.split(".")[1]).split('@')[0];
-                        var userNameChar = firstName.charAt(0) + lastName.charAt(0);
-                        var userName = firstName + " " + lastName;
-                        list.push({
-                            email: doc.id,
-                            userName: userName,
-                            userNameChar: userNameChar
-                        })
+    const getTimesheetList = async () => {
+        try {
+            const email = await AsyncStorage.getItem("userToken");
+            if (email !== null) {
+                var docRef = db.collection("users").doc(email);
+                docRef
+                    .get()
+                    .then(function (doc) {
+                        if (doc.exists) {
+                            let firstName = doc.data().firstName;
+                            let lastName = doc.data().lastName;
+                            let userName = firstName + " " + lastName;
+                            setManager(userName);
+                            if (manager !== null) {
+                                const managerRef = db.collection('Managers')
+                                    .doc(manager)
+                                    .collection('Timesheet')
+                                    .get()
+                                    .then(function (querySnapshot) {
+                                        if (!querySnapshot.empty) {
+                                            const list = [];
+                                            querySnapshot.forEach(function (doc) {
+                                                var firstName = doc.id.split(".")[0];
+                                                var lastName = (doc.id.split(".")[1]).split('@')[0];
+                                                var userNameChar = firstName.charAt(0) + lastName.charAt(0);
+                                                var userName = firstName + " " + lastName;
+                                                list.push({
+                                                    email: doc.id,
+                                                    userName: userName,
+                                                    userNameChar: userNameChar
+                                                })
+                                            });
+                                            setEmployeeList(list);
+                                            setLoading(false);
+                                        }
+                                        else {
+                                            setLoading(false);
+                                            showAlert("No such document");
+                                        }
+                                    });
+                            }
+                        }
+                        else {
+                            setLoading(false);
+                            showAlert("No such document!");
+                        }
+                    }).catch(function (error) {
+                        setLoading(false);
+                        console.log("error", error);
+                        // showAlert(error);
                     });
-
-                    setEmployeeList(list);
-                    setLoading(false);
-                }
-                else {
-                    setLoading(false);
-                    showAlert("No such document");
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-                setLoading(false);
-            })
-        return () => subscriber();
+            }
+        } catch (error) {
+            setLoading(false);
+            showAlert("not able to retrieve email");
+        }
     }
 
     if (isLoading) {
@@ -81,7 +105,7 @@ export default function ReviewTimesheet({ navigation }) {
                 keyExtractor={(item, index) => index.toString()}
                 data={employeeList}
                 renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigateToDetail(item.email,item.userName)}>
+                    <TouchableOpacity onPress={() => navigateToDetail(item.email, item.userName)}>
                         <View style={styles.flatListView}>
                             <View style={styles.circle}>
                                 <Text style={styles.circleText}>{item.userNameChar}</Text>

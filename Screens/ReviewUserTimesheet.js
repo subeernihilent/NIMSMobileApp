@@ -28,15 +28,16 @@ export default function ReviewUserTimesheet({ navigation, route }) {
     const navigateToDetailRequest = (list) => {
         lock() && navigation.push('TimesheetDetailRequest', {
             list: list,
-            email:route.params.email
+            email: route.params.email
         })
     }
 
     const getUserTimesheet = async () => {
         try {
             setLoading(true);
-            if (route.params.email !== null) {
-                var docRef = db.collection("Managers").doc("Ashok Thube")
+            if (route.params.email !== null && route.params.manager !== null) {
+                var docRef = db.collection("Managers")
+                    .doc(route.params.manager)
                     .collection("Timesheet")
                     .doc(route.params.email);
                 docRef.get().then(function (doc) {
@@ -47,11 +48,11 @@ export default function ReviewUserTimesheet({ navigation, route }) {
                                 let timesheetInfo = res.data();
                                 var timesheet = timesheetInfo["timeSheet"];
                                 timesheet.forEach((element) => {
-                                    if (element.managerApproval === false) {
-                                        setUserTimesheet((oldArray) => [...oldArray, element])
+                                    if (element.managerApproval === false && element.approverName === route.params.manager) {
+                                        setUserTimesheet((oldArray) => [...oldArray, element]);
                                     }
-                                    else{
-                                        showAlert("No timesheet pending for approver");
+                                    else {
+                                        showAlert("No timesheet pending for approve");
                                     }
                                 });
                                 setLoading(false);
@@ -65,11 +66,10 @@ export default function ReviewUserTimesheet({ navigation, route }) {
                         setLoading(false);
                         showAlert("No such document!");
                     }
-                })
-                    .catch(function (error) {
-                        setLoading(false);
-                        showAlert(error);
-                    });
+                }).catch(function (error) {
+                    setLoading(false);
+                    showAlert(error);
+                });
             }
         } catch (e) {
             setLoading(false);

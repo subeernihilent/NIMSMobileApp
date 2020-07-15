@@ -15,7 +15,6 @@ export default function TimesheetDetailScreen({ navigation, route }) {
 
     const [detailList, setDetailList] = useState([]);
     const [isLoading, setLoading] = useState(true);
-    const [index, setIndex] = useState(0);
 
     const [monTask, setMonTask] = useState('');
     const [monTime, setMonTime] = useState('');
@@ -80,7 +79,7 @@ export default function TimesheetDetailScreen({ navigation, route }) {
     useEffect(() => {
         setDetailList(route.params.detailList);
         setLoading(false);
-        getData(detailList);
+        getData(route.params.detailList);
     }, [])
 
     const showAlert = (msg) => {
@@ -224,7 +223,7 @@ export default function TimesheetDetailScreen({ navigation, route }) {
                 })
                     .then(function () {
                         setLoading(false);
-                        showAlert("Timesheet submitted successfully");
+                        showAlert("Timesheet submitted successfully!");
                     })
             }
 

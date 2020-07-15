@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, AsyncStorage, StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
-import useNavigateLock from "../Hooks/Lock";
-import { globalStyles } from '../styles/global';
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { db } from "../Enviroment/FirebaseConfig";
 if (!global.btoa) {
     global.btoa = encode;
@@ -118,7 +115,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         margin: 15,
-        marginHorizontal:30,
+        marginHorizontal: 30,
     },
     buttonText: {
         color: '#ffffff',
