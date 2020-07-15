@@ -156,7 +156,7 @@ export default function ApplyLeaveSecondScreen({ navigation, route }) {
                     modalFlag = false
                     Alert.alert(
                       "Warning",
-                      "you have already applied for leave \n please confirm the previous request first \n contact your manager",
+                      "you have already applied for leave \n please confirm the previous request first \n contact your manager or HR",
                       [{ text: "OK", onPress: () => navigation.popToTop() }],
                       { cancelable: false }
                     );
