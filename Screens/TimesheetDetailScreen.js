@@ -15,31 +15,33 @@ export default function TimesheetDetailScreen({ navigation, route }) {
 
     const [detailList, setDetailList] = useState([]);
     const [isLoading, setLoading] = useState(true);
+    const [totalhrs, setTotalhrs] = useState(0);
 
     const [monTask, setMonTask] = useState('');
-    const [monTime, setMonTime] = useState('');
+    const [monTime, setMonTime] = useState(0);
     const [monSubtask, setMonSubtask] = useState('');
     const [monRemark, setMonRemark] = useState('');
 
     const [tueTask, setTueTask] = useState('');
-    const [tueTime, setTueTime] = useState('');
+    const [tueTime, setTueTime] = useState(0);
     const [tueSubtask, setTueSubtask] = useState('');
     const [tueRemark, setTueRemark] = useState('');
 
     const [wedTask, setWedTask] = useState('');
-    const [wedTime, setWedTime] = useState('');
+    const [wedTime, setWedTime] = useState(0);
     const [wedSubtask, setWedSubtask] = useState('');
     const [wedRemark, setWedRemark] = useState('');
 
     const [thuTask, setThuTask] = useState('');
-    const [thuTime, setThuTime] = useState('');
+    const [thuTime, setThuTime] = useState(0);
     const [thuSubtask, setThuSubtask] = useState('');
     const [thuRemark, setThuRemark] = useState('');
 
     const [friTask, setFriTask] = useState('');
-    const [friTime, setFriTime] = useState('');
+    const [friTime, setFriTime] = useState(0);
     const [friSubtask, setFriSubtask] = useState('');
     const [friRemark, setFriRemark] = useState('');
+
 
     const getData = (detailList) => {
         detailList.filter((item) => {

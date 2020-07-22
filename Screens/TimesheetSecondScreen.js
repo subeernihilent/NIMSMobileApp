@@ -19,13 +19,13 @@ export default function TimesheetSecondScreen({ navigation, route }) {
     const lock = useNavigateLock();
 
     const { location, dateName, approverName } = route.params;
-    const [time, setTime] = useState('0');
+    const [time, setTime] = useState(0);
 
     const [modalOpen, setModalOpen] = useState(false);
     const [dayName, setDayName] = useState("Select day");
-    const [dayList, setDayList] = useState([{ id: 0, day: "Sun" }, { id: 1, day: "Mon" },
-    { id: 2, day: "Tue" }, { id: 3, day: "Wed" },
-    { id: 4, day: "Thu" }, { id: 5, day: "Fri" }, { id: 6, day: "Sat" }]);
+    const [dayList, setDayList] = useState([{ id: 0, day: "Sun", isSelected: false }, { id: 1, day: "Mon", isSelected: false },
+    { id: 2, day: "Tue", isSelected: false }, { id: 3, day: "Wed", isSelected: false },
+    { id: 4, day: "Thu", isSelected: false }, { id: 5, day: "Fri", isSelected: false }, { id: 6, day: "Sat", isSelected: false }]);
 
     const [remark, setRemark] = useState("");
 
@@ -53,11 +53,20 @@ export default function TimesheetSecondScreen({ navigation, route }) {
     const [result, setResult] = useState({});
     const [fromDate, setFromDate] = useState('');
 
-    const getData = (dayName, taskName, subtaskName, time, remark, location, approverName, dateName) => {
+    const getData = (dayName, taskName, subtaskName, time, remark) => {
         setDetailList([
             {
                 day: dayName, time: time, task: taskName, subTask: subtaskName, remark: remark, id: Math.random().toString()
-            }, ...detailList,])
+            }, ...detailList,]);
+        var arrIndex = 0
+        let arr = dayList.find(function (obj, index) {
+            if (obj.day === dayName) {
+                arrIndex = index;
+                return obj;
+            }
+        });
+        arr.isSelected = true;
+        dayList[arrIndex] = arr;
     }
 
     const showAlert = (msg) => {
@@ -79,19 +88,23 @@ export default function TimesheetSecondScreen({ navigation, route }) {
                 var weekStartDate = new Date(dateName);
                 var weekEndDate = new Date(weekStartDate)
                 weekEndDate.setDate(weekEndDate.getDate() + 6);
-                if (startDate > weekStartDate && endDate < weekEndDate && obj.leaveApprovedByHR === true) {
+                if (startDate > weekStartDate && endDate < weekEndDate) {
                     setResult(obj);
                     setFromDate(obj.fromDate);
                     return obj;
                 }
-                else if (startDate > weekStartDate && endDate > weekEndDate && obj.leaveApprovedByHR === true) {
+                else if (startDate > weekStartDate && startDate < weekEndDate && endDate > weekEndDate) {
                     setResult(obj);
                     setFromDate(obj.fromDate);
                     return obj;
+                }
+                else {
+                    setResult({});
+                    setFromDate('')
                 }
             });
         }
-      
+
         if (result !== null) {
             let numOfDays = result.numOfDays;
             let toDate = new Date(result.toDate);
@@ -104,29 +117,35 @@ export default function TimesheetSecondScreen({ navigation, route }) {
             weekDay[5] = "Fri";
             weekDay[6] = "Sat";
 
-            console.log("fromDate ", fromDate);
-
             let startDate = new Date(fromDate);
             let fromDay = weekDay[startDate.getDay()];
             let endDay = weekDay[toDate.getDay()];
             if (startDate <= toDate) {
                 if (dayName === fromDay) {
-                    setTaskName("OnLeave");
-                    setSubtaskName("OnLeave");
+                    setTaskName("On Leave");
+                    setSubtaskName("On Leave");
                     setTime('8');
-                    setRemark("OnLeave");
-                    startDate.setDate(startDate.getDate()+1);
+                    setRemark("On Leave");
+                    startDate.setDate(startDate.getDate() + 1);
                     setFromDate(startDate);
                 }
-
-                console.log("if", fromDate);
+                else {
+                    setTaskName("Select");
+                    setSubtaskName("Select");
+                    setTime(0);
+                    setRemark("");
+                }
                 setLeaveFlag(false)
             }
             else {
                 setLeaveFlag(true);
-                console.log("else", fromDate);
+                setTaskName("Select");
+                setSubtaskName("Select");
+                setTime(0);
+                setRemark("");
             }
         }
+
     }
 
     const onProjectSelected = (projectName) => {
@@ -146,7 +165,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
     }
 
     const onTaskClicked = () => {
-        if (taskName === "OnLeave") {
+        if (taskName === "On Leave") {
             setTaskModal(false);
         }
         else {
@@ -161,7 +180,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
     const onSubTaskClicked = () => {
         if (taskName != "Select") {
-            if (taskName === "OnLeave") {
+            if (taskName === "On Leave") {
                 setSubTaskModal(false);
             }
             else {
@@ -177,7 +196,10 @@ export default function TimesheetSecondScreen({ navigation, route }) {
         if (dayName == "Sun" || dayName == "Sat") {
             showAlert("Please select working day");
         }
-        else if (dayName != "Select day" && projectName != "Select" && taskName != "Select" && subtaskName != "Select" && time != '0' && remark != "") {
+        else if (time != 8) {
+            showAlert("Please fill working hours");
+        }
+        else if (dayName !== "Select day" && projectName !== "Select" && taskName !== "Select" && subtaskName !== "Select" && time !== 0 && remark !== "") {
             if (count < 4) {
                 getData(dayName, taskName, subtaskName, time, remark);
                 showAlert("Timesheet added for" + " " + dayName);
@@ -189,16 +211,14 @@ export default function TimesheetSecondScreen({ navigation, route }) {
                 setShowSaveButton(false);
             }
 
-            // setDayName("Select day");
+            setDayName("Select day");
             setTaskName("Select");
             setSubtaskName("Select");
             // setProjectName("Select");
-            setTime('0');
+            setTime(0);
             setRemark("");
         }
-        else if (time !== 8) {
-            showAlert("Set time is 8");
-        }
+
         else {
             showAlert("Please fill all fields");
         }
@@ -337,7 +357,7 @@ export default function TimesheetSecondScreen({ navigation, route }) {
                                     keyExtractor={(item) => item.id.toString()}
                                     data={dayList}
                                     renderItem={({ item }) => (
-                                        <TouchableOpacity onPress={() => onDaySelected(item.day)}>
+                                        <TouchableOpacity disabled={item.isSelected} onPress={() => onDaySelected(item.day)}>
                                             <Text style={styles.dayText}>{item.day}</Text>
                                         </TouchableOpacity>
                                     )}

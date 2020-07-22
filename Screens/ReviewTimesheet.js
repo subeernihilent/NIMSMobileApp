@@ -49,6 +49,9 @@ export default function ReviewTimesheet({ navigation }) {
                             let lastName = doc.data().lastName;
                             let userName = firstName + " " + lastName;
                             setManager(userName);
+                            
+                            console.log(manager);
+
                             if (manager !== null) {
                                 const managerRef = db.collection('Managers')
                                     .doc(manager)
@@ -68,6 +71,7 @@ export default function ReviewTimesheet({ navigation }) {
                                                     userNameChar: userNameChar
                                                 })
                                             });
+                                            console.log(doc.id);
                                             setEmployeeList(list);
                                             setLoading(false);
                                         }
@@ -85,7 +89,7 @@ export default function ReviewTimesheet({ navigation }) {
                     }).catch(function (error) {
                         setLoading(false);
                         console.log("error", error);
-                        // showAlert(error);
+                        showAlert(error);
                     });
             }
         } catch (error) {

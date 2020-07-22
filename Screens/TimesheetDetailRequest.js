@@ -9,7 +9,6 @@ if (!global.atob) {
 }
 
 export default function TimesheetDetailRequest({ navigation, route }) {
-    const [index, setIndex] = useState(0);
     const [isLoading, setLoading] = useState(false);
     const showAlert = (msg) => {
         Alert.alert(
@@ -23,23 +22,24 @@ export default function TimesheetDetailRequest({ navigation, route }) {
         setLoading(true);
         try {
             var docRef = db.collection("Timesheet").doc(route.params.email);
-            docRef.get().then(function (doc) {
+             docRef.get().then(function (doc) {
                 if (doc.exists) {
                     var objects = doc.data().timeSheet;
+                    var approvalIndex=0
                     var result = objects.find(function (obj, index) {
                         if (obj.managerApproval === false) {
-                            setIndex(index);
+                            approvalIndex=index;
                             return obj;
                         }
                     });
                     result.managerApproval = true;
-                    objects[index] = result;
+                    objects[approvalIndex] = result;
                     docRef.update({
                         timeSheet: objects,
                     })
                         .then(function () {
                             setLoading(false);
-                            showAlert("Timesheet approved");
+                            showAlert("Timesheet approved!");
                         });
                 }
             });

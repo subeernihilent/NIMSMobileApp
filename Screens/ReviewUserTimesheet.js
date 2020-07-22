@@ -50,10 +50,9 @@ export default function ReviewUserTimesheet({ navigation, route }) {
                                 timesheet.forEach((element) => {
                                     if (element.managerApproval === false && element.approverName === route.params.manager) {
                                         setUserTimesheet((oldArray) => [...oldArray, element]);
+                                        console.log(element);
                                     }
-                                    else {
-                                        showAlert("No timesheet pending for approve");
-                                    }
+
                                 });
                                 setLoading(false);
                             });

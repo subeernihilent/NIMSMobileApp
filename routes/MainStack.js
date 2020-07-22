@@ -78,6 +78,7 @@ export default function HomeStack() {
         component={TimesheetDetailScreen}
         options={{
           title: "Timesheet",
+          headerLeft: null
         }}
       />
     </Stack.Navigator>
