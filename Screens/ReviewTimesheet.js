@@ -49,8 +49,8 @@ export default function ReviewTimesheet({ navigation }) {
                             let lastName = doc.data().lastName;
                             let userName = firstName + " " + lastName;
                             setManager(userName);
-                            
-                            console.log(manager);
+
+                            console.log("manager",manager);
 
                             if (manager !== null) {
                                 const managerRef = db.collection('Managers')

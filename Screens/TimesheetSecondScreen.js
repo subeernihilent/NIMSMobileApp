@@ -254,7 +254,8 @@ export default function TimesheetSecondScreen({ navigation, route }) {
 
                     } else {
                         setLoading(false)
-                        showAlert("No such document");
+                        console.log("No such document");
+                        // showAlert("No such document");
                     }
                 }).catch(function (error) {
                     setLoading(false)
@@ -357,8 +358,8 @@ export default function TimesheetSecondScreen({ navigation, route }) {
                                     keyExtractor={(item) => item.id.toString()}
                                     data={dayList}
                                     renderItem={({ item }) => (
-                                        <TouchableOpacity disabled={item.isSelected} onPress={() => onDaySelected(item.day)}>
-                                            <Text style={styles.dayText}>{item.day}</Text>
+                                        <TouchableOpacity  disabled={item.isSelected} onPress={() => onDaySelected(item.day)}>
+                                            <Text style={item.isSelected ? styles.dayTextChanged : styles.dayText}>{item.day}</Text>
                                         </TouchableOpacity>
                                     )}
                                 />
@@ -487,6 +488,11 @@ const styles = StyleSheet.create({
     dayText: {
         marginVertical: 3,
         fontSize: 17,
+    },
+    dayTextChanged: {
+        marginVertical: 3,
+        fontSize: 17,
+        color: 'grey'
     },
     activityIndicator: {
         flex: 1,
