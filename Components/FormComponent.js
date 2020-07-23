@@ -78,6 +78,18 @@ export default function FormComponent({ navigation }) {
         location: "Pune",
       });
 
+      var today = new Date();
+      var dateString = today.toString();
+
+      let weekRef = db.collection("Week").doc(emailId);
+      batch.set(weekRef, {
+        weekDays:[
+          {status:false,
+            week: dateString
+          }]
+        })
+
+
       let leaveStatus = db.collection("userLeaveStatus").doc(emailId);
       batch.set(leaveStatus, {
         Leaves:[
