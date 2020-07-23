@@ -68,7 +68,7 @@ export default function ReviewUserTimesheet({ navigation, route }) {
                     }
                 }).catch(function (error) {
                     setLoading(false);
-                    showAlert(error);
+                    showAlert(error.message);
                 });
             }
         } catch (e) {

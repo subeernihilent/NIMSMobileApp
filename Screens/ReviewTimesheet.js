@@ -52,9 +52,9 @@ export default function ReviewTimesheet({ navigation }) {
 
                             console.log("manager",manager);
 
-                            if (manager !== null) {
+                            if (userName !== null) {
                                 const managerRef = db.collection('Managers')
-                                    .doc(manager)
+                                    .doc(userName)
                                     .collection('Timesheet')
                                     .get()
                                     .then(function (querySnapshot) {
@@ -88,8 +88,8 @@ export default function ReviewTimesheet({ navigation }) {
                         }
                     }).catch(function (error) {
                         setLoading(false);
-                        console.log("error", error);
-                        showAlert(error);
+                        console.log("error", error.message);
+                        showAlert(error.message);
                     });
             }
         } catch (error) {
